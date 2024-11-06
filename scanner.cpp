@@ -80,13 +80,15 @@
             }
             else if (word == "endfun") {
                 token = new Token(Token::ENDFUN, word, 0, word.length());
+            }else if (word == "in") {
+                token = new Token(Token::IN, word, 0, word.length());
             }
             else {
                 token = new Token(Token::ID, word, 0, word.length());
             }
         }
 
-        else if (strchr("+-*/()=;,<{}:", c)) {
+        else if (strchr("+-*/()=;,>{}:.", c)) {
             switch(c) {
                 case '+': token = new Token(Token::PLUS, c); break;
                 case '-': token = new Token(Token::MINUS, c); break;
@@ -95,6 +97,13 @@
                 case ',': token = new Token(Token::COMA, c); break;
                 case '(': token = new Token(Token::PI, c); break;
                 case ')': token = new Token(Token::PD, c); break;
+                case '.':
+                    if (current + 1 < input.length() && input[current + 1] == '.') {
+                        token = new Token(Token::DDOT, "..", 0, 2);
+                        current++;
+                    }
+                break;
+
                 case '=':
                     if (current + 1 < input.length() && input[current + 1] == '=') {
                         token = new Token(Token::EQUAL, "==", 0, 2);

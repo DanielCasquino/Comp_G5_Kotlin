@@ -31,6 +31,8 @@ public:
 
         LINE_BREAK, // \n
         PC, // ;
+        DDOT, // ..
+        IN, // in
     };
 
     Type type;

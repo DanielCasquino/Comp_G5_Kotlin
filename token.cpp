@@ -46,6 +46,8 @@ std::ostream& operator << ( std::ostream& outs, const Token & tok )
         case Token::LEFT_BRACKETS : outs << "TOKEN(LEFT_BRACKETS)"; break;
         case Token::RIGHT_BRACKETS : outs << "TOKEN(RIGHT_BRACKETS)"; break;
         case Token::LINE_BREAK : outs << "TOKEN(LINE_BREAK)"; break;
+        case Token::DDOT : outs << "TOKEN(DDOT)"; break;
+        case Token::IN : outs << "TOKEN(IN)"; break;
         default: outs << "TOKEN(UNKNOWN)"; break;
     }
     return outs;
