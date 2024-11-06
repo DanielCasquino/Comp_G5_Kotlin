@@ -1,0 +1,3 @@
+C:/Users/Ce mar/Documents/UTEC Ciclos/Utec ciclo 5/Compiladores/proyecto/Scanner/cmake-build-debug/CMakeFiles/Scanner.dir
+C:/Users/Ce mar/Documents/UTEC Ciclos/Utec ciclo 5/Compiladores/proyecto/Scanner/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Ce mar/Documents/UTEC Ciclos/Utec ciclo 5/Compiladores/proyecto/Scanner/cmake-build-debug/CMakeFiles/rebuild_cache.dir
