@@ -3,9 +3,12 @@ fun main() {
 
     x = 1;
     
-    for (i in 0..9) { // Soy un  comentario
+    for (i in 0..9) {
         x = x + i
     }
     
-    println(x)
+    println(x)/* fere
+                                       jdkejekjerekrj
+                                                           */
+
 }

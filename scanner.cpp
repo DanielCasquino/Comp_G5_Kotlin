@@ -22,6 +22,21 @@
                 }
                 continue;
             }
+
+            if (current < input.length() - 1 && input[current] == '/' && input[current + 1] == '*') {
+                current += 2;
+                while (current < input.length() - 1) {
+                    if (input[current] == '*' && input[current + 1] == '/') {
+                        current += 2;
+                        break;
+                    }
+                    current++;
+                }
+                if (current >= input.length()) {
+                    cout<<"Error"<<endl;
+                }
+                continue;
+            }
             //Ignorar salto de linea si ya tiene token subsiguiente o es un antiguo salto de linea
             if (is_white_space(input[current]) || (
                 (
