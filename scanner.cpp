@@ -14,29 +14,28 @@
 
     Token* Scanner::nextToken() {
         Token* token;
-        while (current < input.length() &&  is_white_space(input[current]
-        )  or (
-                //Aqui colocar todos lso casos en los q salto de linea ya no es necesario
-                //Pq text y no token?, [Error manejo de puntero sufri]
+        while (current < input.length()) {
+            //Comnetario de linea
+            if (current < input.length() - 1 && input[current] == '/' && input[current + 1] == '/') {
+                while (current < input.length() && input[current] != '\n') {
+                    current++;
+                }
+                continue;
+            }
+            //Ignorar salto de linea si ya tiene token subsiguiente o es un antiguo salto de linea
+            if (is_white_space(input[current]) || (
                 (
-                prevtext=="{" or
-                prevtext=="\n" or
-                prevtext == ";" or
-                prevtext == "}" or
-                //Operaciones binarias:
-                prevtext == "+" or
-                prevtext == "-" or
-                prevtext == "*" or
-                prevtext == "/" or
-                prevtext == ">" or
-                prevtext == ">=" or
-                prevtext == "=="
-
-                )
-            and input[current] == '\n'
-            ) ) {
-            current++;
+                prevtext == "{" || prevtext == "\n" || prevtext == ";" || prevtext == "}" ||
+                prevtext == "+" || prevtext == "-" || prevtext == "*" || prevtext == "/" ||
+                prevtext == ">" || prevtext == ">=" || prevtext == "=="
+                ) && input[current] == '\n'
+            )) {
+                current++;
+            } else {
+                break;
+            }
         }
+
         if (current >= input.length()) return new Token(Token::END);
         char c  = input[current];
         first = current;
@@ -93,7 +92,10 @@
                 case '+': token = new Token(Token::PLUS, c); break;
                 case '-': token = new Token(Token::MINUS, c); break;
                 case '*': token = new Token(Token::MUL, c); break;
-                case '/': token = new Token(Token::DIV, c); break;
+                case '/':
+                        token = new Token(Token::DIV, c);
+                break;
+
                 case ',': token = new Token(Token::COMA, c); break;
                 case '(': token = new Token(Token::PI, c); break;
                 case ')': token = new Token(Token::PD, c); break;

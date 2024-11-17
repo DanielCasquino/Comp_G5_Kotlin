@@ -3,8 +3,7 @@ fun suma(a: Int, b: Int): Int {
 }
 
 fun main() {
-    var x: Int
-    var y: Int
+    var x: Int;var y: Int
 
     x = 1
     y = 20
