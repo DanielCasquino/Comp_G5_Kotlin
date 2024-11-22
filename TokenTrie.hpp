@@ -1,7 +1,10 @@
+#ifndef TOKENTRIE_HPP
+#define TOKENTRIE_HPP
+
 #include <unordered_map>
 #include <map>
 
-#include "Token.hpp"
+#include "token.hpp"
 
 class TokenTrie
 {
@@ -35,3 +38,5 @@ public:
     auto getRoot() const -> Node *;
     auto findToken(const std::string &token) const -> Token::Type;
 };
+
+#endif // TOKENTRIE_HPP

@@ -27,13 +27,13 @@ std::string Token::typeToString(Type type)
 
 std::ostream &operator<<(std::ostream &outs, const Token &tok)
 {
-    outs << "Token(" << Token::typeToString(tok._type) << ", \"" << tok._text << "\")";
+    outs << "Token(" << Token::typeToString(tok._type) << ')';
     return outs;
 }
 
 std::ostream &operator<<(std::ostream &outs, const Token *tok)
 {
-    outs << "Token(" << Token::typeToString(tok->_type) << ", \"" << tok->_text << "\")";
+    outs << "Token(" << Token::typeToString(tok->_type) << ')';
     return outs;
 }
 
@@ -43,27 +43,29 @@ const std::unordered_map<Token::Type, std::string> Token::typeToStringMap = {
     {SUB, "SUB"},
     {MUL, "MUL"},
     {DIV, "DIV"},
-    {LEFT_PARENTHESIS, "LEFT_PARENTHESIS"},
-    {RIGHT_PARENTHESIS, "RIGHT_PARENTHESIS"},
-    {FUN, "FUN"},
-    {LEFT_BRACKETS, "LEFT_BRACKETS"},
-    {RIGHT_BRACKETS, "RIGHT_BRACKETS"},
+    {NUM, "NUM"},
+    {END, "END"},
     {ASSIGN, "ASSIGN"},
-    {COLON, "COLON"},
-    {INT, "INT"},
-    {VAR, "VAR"},
-    {COMMENT, "COMMENT"},
-    {COMMENT_START, "COMMENT_START"},
-    {COMMENT_END, "COMMENT_END"},
-    {PRINTLN, "PRINTLN"},
-    {COMMA, "COMMA"},
-    {RETURN, "RETURN"},
-    {VAL, "VAL"},
-    {POINT, "POINT"},
     {IF, "IF"},
     {ELSE, "ELSE"},
+    {COMMA, "COMMA"},
+    {FOR, "FOR"},
+    {RETURN, "RETURN"},
     {GREATER_THAN, "GREATER_THAN"},
-    {LESS_THAN, "LESS_THAN"},
     {GREATER_EQUAL, "GREATER_EQUAL"},
-    {LESS_EQUAL, "LESS_EQUAL"},
-    {EQUAL, "EQUAL"}};
+    {EQUAL, "EQUAL"},
+    {FUN, "FUN"},
+    {ENDFUN, "ENDFUN"},
+    {LEFT_PARENTHESIS, "LEFT_PARENTHESIS"},
+    {RIGHT_PARENTHESIS, "RIGHT_PARENTHESIS"},
+    {VAL, "VAL"},
+    {VAR, "VAR"},
+    {ID, "ID"},
+    {COLON, "COLON"},
+    {PRINTLN, "PRINTLN"},
+    {LEFT_BRACKET, "LEFT_BRACKET"},
+    {RIGHT_BRACKET, "RIGHT_BRACKET"},
+    {LINE_BREAK, "LINE_BREAK"},
+    {SEMICOLON, "SEMICOLON"},
+    {DOUBLE_DOT, "DOUBLE_DOT"},
+    {IN, "IN"}};
