@@ -68,4 +68,7 @@ const std::unordered_map<Token::Type, std::string> Token::typeToStringMap = {
     {LINE_BREAK, "LINE_BREAK"},
     {SEMICOLON, "SEMICOLON"},
     {DOUBLE_DOT, "DOUBLE_DOT"},
-    {IN, "IN"}};
+    {IN, "IN"},
+    {DOWNTO, "DOWNTO"},
+    {UPTO, "UPTO"},
+    {STEP, "STEP"}};

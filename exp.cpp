@@ -44,7 +44,7 @@ WhileStatement::~WhileStatement()
     delete condition;
     delete b;
 }
-ForStatement::ForStatement(Exp *s, Exp *e, Exp *st, Body *b) : start(s), end(e), step(st), b(b) {}
+ForStatement::ForStatement(Exp *s, Exp *e, Exp *st, bool isUp, Body *b) : start(s), end(e), step(st), isUpTo(isUp), b(b) {}
 ForStatement::~ForStatement()
 {
     delete start;
@@ -121,3 +121,6 @@ string Exp::binopToChar(BinaryOp op)
     }
     return c;
 }
+
+ParamDecList::ParamDecList() {}
+ParamDecList::~ParamDecList() {}

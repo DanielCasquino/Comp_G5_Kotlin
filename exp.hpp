@@ -141,8 +141,9 @@ public:
     Exp *start;
     Exp *end;
     Exp *step;
+    bool isUpTo;
     Body *b;
-    ForStatement(Exp *start, Exp *end, Exp *step, Body *b);
+    ForStatement(Exp *start, Exp *end, Exp *step, bool isUpto, Body *b);
     int accept(Visitor *visitor);
     ~ForStatement();
 };
@@ -196,8 +197,8 @@ public:
         visitor->visit(this);
         return 0;
     }
-    ParamDecList() {}
-    ~ParamDecList() {}
+    ParamDecList();
+    ~ParamDecList();
 };
 class FunDec
 {

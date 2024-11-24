@@ -13,12 +13,19 @@ private:
     std::string prevtext;
     TokenTrie *trie;
 
+    int row, column;
+
     void skipComments();
+    void addRow(int n);
+    void addColumn(int n);
 
 public:
     Scanner(const char *in_s);
     Token *nextToken();
     void reset();
+    void throw_unrecognizedCharacter();
+    void throw_OutOfBounds();
+    std::string printPosition();
     ~Scanner();
 };
 

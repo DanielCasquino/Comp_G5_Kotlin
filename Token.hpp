@@ -47,6 +47,9 @@ public:
         SEMICOLON,  // ;
         DOUBLE_DOT, // ..
         IN,         // in
+        DOWNTO,
+        UPTO,
+        STEP
     };
 
 private:

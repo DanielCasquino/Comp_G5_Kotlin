@@ -1,12 +1,41 @@
 #include <iostream>
 #include <cstring>
+
 #include "token.hpp"
 #include "scanner.hpp"
 #include "tokentrie.hpp"
 
 using namespace std;
 
-Scanner::Scanner(const char *s) : input(s), first(0), current(0), prevtext("")
+string Scanner::printPosition()
+{
+    return '(' + to_string(row) + ", " + to_string(column) + ')';
+}
+
+void Scanner::throw_unrecognizedCharacter()
+{
+    cout << "Scanner Error: unrecognized character " << input[current] << " at (" << row << ", " << column << ")" << endl;
+    exit(1);
+}
+
+void Scanner::throw_OutOfBounds()
+{
+    cout << "Scanner Error: out of bounds, attempted to read character at (" << row << ", " << column << ")" << endl;
+    exit(1);
+}
+
+void Scanner::addRow(int n = 1)
+{
+    row += n;
+    column = 1;
+}
+
+void Scanner::addColumn(int n = 1)
+{
+    column += n;
+}
+
+Scanner::Scanner(const char *s) : input(s), first(0), current(0), prevtext(""), row(1), column(1)
 {
     trie = new TokenTrie({{"+", Token::ADD},
                           {"-", Token::SUB},
@@ -34,7 +63,10 @@ Scanner::Scanner(const char *s) : input(s), first(0), current(0), prevtext("")
                           {"}", Token::RIGHT_BRACKET},
                           {";", Token::SEMICOLON},
                           {"..", Token::DOUBLE_DOT},
-                          {"in", Token::IN}});
+                          {"in", Token::IN},
+                          {"downTo", Token::DOWNTO},
+                          {"upTo", Token::UPTO},
+                          {"step", Token::STEP}});
 }
 
 bool isWhiteSpace(char c)
@@ -51,26 +83,31 @@ void Scanner::skipComments()
         {
             while (current < input.length() && input[current] != '\n')
             {
-                current++;
+                addColumn();
+                ++current;
             }
+            addRow();
             continue;
         }
 
         if (current < input.length() - 1 && input[current] == '/' && input[current + 1] == '*')
         {
             current += 2;
+            addColumn(2);
             while (current < input.length() - 1)
             {
                 if (input[current] == '*' && input[current + 1] == '/')
                 {
                     current += 2;
+                    addColumn(2);
                     break;
                 }
                 current++;
+                addColumn();
             }
             if (current >= input.length())
             {
-                cout << "Error" << endl;
+                throw_OutOfBounds();
             }
             continue;
         }
@@ -82,6 +119,11 @@ void Scanner::skipComments()
                                              input[current] == '\n'))
         {
             current++;
+            addColumn();
+            if (input[current] == '\n')
+            {
+                addRow();
+            }
         }
         else
         {
@@ -106,21 +148,30 @@ Token *Scanner::nextToken()
         token = new Token(Token::LINE_BREAK, "\n");
         prevtext = "\n";
         current++;
+        addRow();
         return token;
     }
 
     if (isdigit(c))
     {
         current++;
+        addColumn();
         while (current < input.length() && isdigit(input[current]))
+        {
             current++;
+            addColumn();
+        }
         token = new Token(Token::NUM, input, first, current - first);
     }
     else if (isalpha(c))
     {
         current++;
+        addColumn();
         while (current < input.length() && isalnum(input[current]))
+        {
             current++;
+            addColumn();
+        }
 
         string word = input.substr(first, current - first);
         Token::Type type = trie->findToken(word);
@@ -145,12 +196,18 @@ Token *Scanner::nextToken()
         }
         word = word.substr(0, lastCorrectToken - current);
         token = new Token(type, word);
+        int difference = lastCorrectToken - current;
+        addColumn(difference);
         current = lastCorrectToken;
     }
     // if (prevToken) {
     //     delete prevToken;
     // }
     // prevToken = token;
+    if (token == nullptr)
+    {
+        throw_unrecognizedCharacter();
+    }
     prevtext = token->getText();
     return token;
 }
@@ -159,6 +216,9 @@ void Scanner::reset()
 {
     first = 0;
     current = 0;
+    prevtext = "";
+    row = 1;
+    column = 1;
 }
 
 Scanner::~Scanner()
@@ -175,7 +235,7 @@ void test_scanner(Scanner *scanner)
     {
         if (current->getType() == Token::ERROR)
         {
-            cout << "Error en scanner - carácter inválido: " << current->getText() << endl;
+            scanner->throw_unrecognizedCharacter();
             break;
         }
         else
