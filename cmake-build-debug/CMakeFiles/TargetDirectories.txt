@@ -1,0 +1,3 @@
+C:/Code/UTEC/Compiladores/ProyectoFinal/Comp_G5_Kotlin/cmake-build-debug/CMakeFiles/Scanner.dir
+C:/Code/UTEC/Compiladores/ProyectoFinal/Comp_G5_Kotlin/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Code/UTEC/Compiladores/ProyectoFinal/Comp_G5_Kotlin/cmake-build-debug/CMakeFiles/rebuild_cache.dir

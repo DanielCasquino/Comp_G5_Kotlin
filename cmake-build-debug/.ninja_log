@@ -1,0 +1,12 @@
+# ninja log v6
+3	553	7541121182144640	CMakeFiles/Scanner.dir/main.cpp.obj	c03cfb73857cbdac
+20	630	7541121182323594	CMakeFiles/Scanner.dir/visitor.cpp.obj	1023ebc8b1570bde
+17	645	7541121182288510	CMakeFiles/Scanner.dir/token.cpp.obj	28d2d72142e283f6
+23	636	7541121182353648	CMakeFiles/Scanner.dir/TokenTrie.cpp.obj	32e036c4edc27cfb
+10	649	7541121182218457	CMakeFiles/Scanner.dir/exp.cpp.obj	fdb43fa696298e43
+13	658	7541121182258507	CMakeFiles/Scanner.dir/scanner.cpp.obj	2b26bfcf9f31eb48
+658	844	7541121188704462	Scanner.exe	11412eb7097e8735
+4	505	7541123153783339	CMakeFiles/Scanner.dir/main.cpp.obj	c03cfb73857cbdac
+41	623	7541327532677582	CMakeFiles/Scanner.dir/main.cpp.obj	c03cfb73857cbdac
+46	721	7541327532728950	CMakeFiles/Scanner.dir/parser.cpp.obj	14469374a0aad3fa
+721	1041	7541327539479081	Scanner.exe	5a42c2fbfa862a11

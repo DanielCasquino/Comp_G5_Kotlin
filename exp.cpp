@@ -89,6 +89,13 @@ Body::~Body()
     delete slist;
 }
 
+Program::Program(VarDecList *var_dec_lists, FunDecList *fun_dec_lists) : var_dec_lists(var_dec_lists), fun_dec_lists(fun_dec_lists) {}
+Program::~Program()
+{
+    delete var_dec_lists;
+    delete fun_dec_lists;
+}
+
 Stm::~Stm() {}
 string Exp::binopToChar(BinaryOp op)
 {

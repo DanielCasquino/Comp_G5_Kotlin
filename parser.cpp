@@ -35,7 +35,7 @@ bool Parser::advance()
         previous = temp;
         if (check(Token::ERROR))
         {
-            cout << "Error de análisis, carácter no reconocido: " << current->text << endl;
+            cout << "Error de análisis, carácter no reconocido: " << current->getText() << endl;
             exit(1);
         }
         return true;
@@ -261,7 +261,7 @@ Stm *Parser::parseStatement()
 
     if (match(Token::ID))
     {
-        string lex = previous->text;
+        string lex = previous->getText();
 
         if (!match(Token::ASSIGN))
         {
@@ -273,7 +273,7 @@ Stm *Parser::parseStatement()
     }
     else if (match(Token::PRINTLN))
     {
-        if (!match(Token::PI))
+        if (!match(Token::LEFT_PARENTHESIS))
         {
             cout << "Error: se esperaba un '(' después de 'print'." << endl;
             exit(1);
@@ -289,7 +289,7 @@ Stm *Parser::parseStatement()
     else if (match(Token::IF))
     {
         e = parseCExp();
-        if (!match(Token::LEFT_BRACKETS))
+        if (!match(Token::LEFT_BRACKET))
         {
             cout << "Error: se esperaba 'then' después de la expresión." << endl;
             exit(1);
@@ -301,7 +301,7 @@ Stm *Parser::parseStatement()
         {
             fb = parseBody();
         }
-        if (!match(Token::RIGHT_BRACKETS))
+        if (!match(Token::RIGHT_BRACKET))
         {
             cout << "Error: se esperaba 'end' al final de la declaración." << endl;
             exit(1);
@@ -310,19 +310,19 @@ Stm *Parser::parseStatement()
     }
     else if (match(Token::FOR))
     {
-        if (!match(Token::PI))
+        if (!match(Token::LEFT_PARENTHESIS))
         {
             cout << "Error: se esperaba '(' después de 'for'." << endl;
             exit(1);
         }
         Exp *start = parseCExp();
-        if (!match(Token::COMA))
+        if (!match(Token::COMMA))
         {
             cout << "Error: se esperaba ',' después de la expresión." << endl;
             exit(1);
         }
         Exp *end = parseCExp();
-        if (!match(Token::COMA))
+        if (!match(Token::COMMA))
         {
             cout << "Error: se esperaba ',' después de la expresión." << endl;
             exit(1);
@@ -334,7 +334,7 @@ Stm *Parser::parseStatement()
             exit(1);
         }
         tb = parseBody();
-        if (!match(Token::RIGHT_BRACKETS))
+        if (!match(Token::RIGHT_BRACKET))
         {
             cout << "Error: se esperaba 'endfor' al final de la declaración." << endl;
             exit(1);
@@ -343,7 +343,7 @@ Stm *Parser::parseStatement()
     }
     else if (match(Token::RETURN))
     {
-        if (!match(Token::PI))
+        if (!match(Token::LEFT_PARENTHESIS))
         {
             cout << "Error: se esperaba '(' después de 'for'." << endl;
             exit(1);
@@ -377,15 +377,15 @@ Exp *Parser::parseCExp()
     if (match(Token::GREATER_THAN) || match(Token::GREATER_EQUAL) || match(Token::EQUAL))
     {
         BinaryOp op;
-        if (previous->type == Token::GREATER_THAN)
+        if (previous->getType() == Token::GREATER_THAN)
         {
             op = LT_OP;
         }
-        else if (previous->type == Token::GREATER_EQUAL)
+        else if (previous->getType() == Token::GREATER_EQUAL)
         {
             op = LE_OP;
         }
-        else if (previous->type == Token::EQUAL)
+        else if (previous->getType() == Token::EQUAL)
         {
             op = EQ_OP;
         }
@@ -398,14 +398,14 @@ Exp *Parser::parseCExp()
 Exp *Parser::parseExpression()
 {
     Exp *left = parseTerm();
-    while (match(Token::PLUS) || match(Token::MINUS))
+    while (match(Token::ADD) || match(Token::SUB))
     {
         BinaryOp op;
-        if (previous->type == Token::PLUS)
+        if (previous->getType() == Token::ADD)
         {
             op = PLUS_OP;
         }
-        else if (previous->type == Token::MINUS)
+        else if (previous->getType() == Token::SUB)
         {
             op = MINUS_OP;
         }
@@ -421,11 +421,11 @@ Exp *Parser::parseTerm()
     while (match(Token::MUL) || match(Token::DIV))
     {
         BinaryOp op;
-        if (previous->type == Token::MUL)
+        if (previous->getType() == Token::MUL)
         {
             op = MUL_OP;
         }
-        else if (previous->type == Token::DIV)
+        else if (previous->getType() == Token::DIV)
         {
             op = DIV_OP;
         }
@@ -442,12 +442,12 @@ Exp *Parser::parseFactor()
     Exp *e2;
     if (match(Token::NUM))
     {
-        return new NumberExp(stoi(previous->text));
+        return new NumberExp(stoi(previous->getText()));
     }
     else if (match(Token::ID))
     {
-        string id = previous->text;
-        if (match(Token::PI))
+        string id = previous->getText();
+        if (match(Token::LEFT_PARENTHESIS))
         { // Para arglis
             FCallExp *f_call_exp = new FCallExp(id);
             // if (check(Token::RIGHT_PARENTHESIS)) {//Ningun parametro
@@ -456,20 +456,20 @@ Exp *Parser::parseFactor()
             // }
             // Uno o mas parametros
             f_call_exp->arglist.push_back(parseExpression());
-            while (match(Token::COMA))
+            while (match(Token::COMMA))
             {
                 f_call_exp->arglist.push_back(parseExpression());
             }
             if (!match(Token::RIGHT_PARENTHESIS))
             {
-                cerr << "Se esperaba un RIGHT_PARENTHESISf, pero se encontro_ " << current->text << endl;
+                cerr << "Se esperaba un RIGHT_PARENTHESISf, pero se encontro_ " << current->getText() << endl;
                 exit(9);
             }
             return f_call_exp;
         }
-        return new IdentifierExp(previous->text);
+        return new IdentifierExp(previous->getText());
     }
-    else if (match(Token::PI))
+    else if (match(Token::LEFT_PARENTHESIS))
     {
         e = parseCExp();
         if (!match(Token::RIGHT_PARENTHESIS))
@@ -479,6 +479,6 @@ Exp *Parser::parseFactor()
         }
         return e;
     }
-    cout << "Error: se esperaba un número o identificador pero se encontro___" << current->text << "Y antes estaba un__" << previous->text << endl;
+    cout << "Error: se esperaba un número o identificador pero se encontro___" << current->getText() << "Y antes estaba un__" << previous->getText() << endl;
     exit(0);
 }

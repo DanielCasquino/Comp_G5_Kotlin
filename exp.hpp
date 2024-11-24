@@ -20,6 +20,7 @@ enum BinaryOp
 };
 
 class Body;
+class ImpValueVisitor;
 
 class Exp
 {
@@ -27,13 +28,18 @@ public:
     virtual int accept(Visitor *visitor) = 0;
     virtual ~Exp() = 0;
     static string binopToChar(BinaryOp op);
+    virtual ImpValue accept(ImpValueVisitor* v) = 0;
+    virtual ImpType accept(TypeVisitor* v) = 0;
 };
+// FIXME: skipping
 class IFExp : public Exp
 {
 public:
     Exp *cond, *left, *right;
     IFExp(Exp *cond, Exp *l, Exp *r);
     int accept(Visitor *visitor);
+    ImpValue accept(ImpValueVisitor *v);
+    ImpType accept(TypeVisitor *v);
     ~IFExp();
 };
 
@@ -44,6 +50,8 @@ public:
     BinaryOp op;
     BinaryExp(Exp *l, Exp *r, BinaryOp op);
     int accept(Visitor *visitor);
+    ImpValue accept(ImpValueVisitor *v);
+    ImpType accept(TypeVisitor *v);
     ~BinaryExp();
 };
 
@@ -53,9 +61,11 @@ public:
     int value;
     NumberExp(int v);
     int accept(Visitor *visitor);
+    ImpValue accept(ImpValueVisitor *v);
+    ImpType accept(TypeVisitor *v);
     ~NumberExp();
 };
-
+// FIXME: skipping
 class BoolExp : public Exp
 {
 public:
@@ -71,9 +81,12 @@ public:
     std::string name;
     IdentifierExp(const std::string &n);
     int accept(Visitor *visitor);
+    ImpValue accept(ImpValueVisitor *v);
+    ImpType accept(TypeVisitor *v);
     ~IdentifierExp();
 };
 
+// FIXME: skipping
 class FCallExp : public Exp
 {
 public:
@@ -94,6 +107,8 @@ class Stm
 public:
     virtual int accept(Visitor *visitor) = 0;
     virtual ~Stm() = 0;
+    virtual void accept(ImpValueVisitor* v) = 0;
+    virtual void accept(TypeVisitor* v) = 0;
 };
 
 class AssignStatement : public Stm
@@ -103,6 +118,8 @@ public:
     Exp *rhs;
     AssignStatement(std::string id, Exp *e);
     int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
     ~AssignStatement();
 };
 
@@ -112,6 +129,8 @@ public:
     Exp *e;
     PrintStatement(Exp *e);
     int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
     ~PrintStatement();
 };
 
@@ -123,8 +142,11 @@ public:
     Body *els;
     IfStatement(Exp *condition, Body *then, Body *els);
     int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
     ~IfStatement();
 };
+// TODO: missing implementation in scanner
 class WhileStatement : public Stm
 {
 public:
@@ -132,6 +154,8 @@ public:
     Body *b;
     WhileStatement(Exp *condition, Body *b);
     int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
     ~WhileStatement();
 };
 
@@ -144,6 +168,8 @@ public:
     Body *b;
     ForStatement(Exp *start, Exp *end, Exp *step, Body *b);
     int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
     ~ForStatement();
 };
 
@@ -154,6 +180,8 @@ public:
     list<string> vars;
     VarDec(string type, list<string> vars);
     int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
     ~VarDec();
 };
 
@@ -164,6 +192,8 @@ public:
     VarDecList();
     void add(VarDec *vardec);
     int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
     ~VarDecList();
 };
 
@@ -174,6 +204,8 @@ public:
     StatementList();
     void add(Stm *stm);
     int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
     ~StatementList();
 };
 
@@ -184,6 +216,8 @@ public:
     StatementList *slist;
     Body(VarDecList *vardecs, StatementList *stms);
     int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
     ~Body();
 };
 class ParamDecList
@@ -191,13 +225,11 @@ class ParamDecList
 public:
     vector<string> types;
     vector<string> ids;
-    int accept(Visitor *visitor)
-    {
-        visitor->visit(this);
-        return 0;
-    }
-    ParamDecList() {}
-    ~ParamDecList() {}
+    int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
+    ParamDecList(vector<string> types_, vector<string> ids_);
+    ~ParamDecList();
 };
 class FunDec
 {
@@ -208,15 +240,11 @@ public:
     Body *body;
 
     FunDec() {}
-    FunDec(string type, string id, ParamDecList *param_dec_list, Body *body) : type(type), id(id), param_dec_list(param_dec_list), body(body)
-    {
-    }
-    ~FunDec() {}
-    int accept(Visitor *visitor)
-    {
-        visitor->visit(this);
-        return 0;
-    }
+    FunDec(string type, string id, ParamDecList *param_dec_list, Body *body);
+    ~FunDec();
+    int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
 };
 class FunDecList
 {
@@ -226,27 +254,22 @@ public:
     {
         fun_decs.push_back(fundec);
     }
-    int accept(Visitor *visitor)
-    {
-        visitor->visit(this);
-        return 0;
-    }
+    int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
     FunDecList() {}
-    ~FunDecList() {}
+    ~FunDecList();
 };
 
 class ReturnStatement : public Stm
 {
 public:
-    int accept(Visitor *visitor)
-    {
-        visitor->visit(this);
-        return 0;
-    }
+    int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
     Exp *exp;
-    ReturnStatement() {}
-    ReturnStatement(Exp *exp) : exp(exp) {}
-    ~ReturnStatement() {}
+    ReturnStatement(Exp *exp);
+    ~ReturnStatement();
 };
 
 class Program
@@ -254,10 +277,12 @@ class Program
 public:
     VarDecList *var_dec_lists;
     FunDecList *fun_dec_lists;
-    Program() {}
-    Program(VarDecList *var_dec_lists, FunDecList *fun_dec_lists)
-        : var_dec_lists(var_dec_lists), fun_dec_lists(fun_dec_lists) {}
-    ~Program() {}
+    Program();
+    Program(VarDecList *var_dec_lists, FunDecList *fun_dec_lists);
+    int accept(Visitor *visitor);
+    void accept(ImpValueVisitor *v);
+    void accept(TypeVisitor *v);
+    ~Program();
 };
 
 #endif // EXP_HPP

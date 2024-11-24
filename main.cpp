@@ -3,6 +3,7 @@
 #include <string>
 #include "scanner.hpp"
 #include "visitor.hpp"
+#include "parser.hpp"
 
 using namespace std;
 
@@ -36,23 +37,23 @@ int main(int argc, const char *argv[])
     Scanner scanner_test(input_copy.c_str());
     test_scanner(&scanner_test);
     cout << "Scanner exitoso" << endl;
-    // cout << endl;
-    // cout << "Iniciando parsing:" << endl;
-    // Parser parser(&scanner);
-    // try {
-    //     Program* program = parser.parseProgram();
-    //     cout << "Parsing exitoso" << endl << endl;
-    //     cout << "Iniciando Visitor:" << endl;
-    //     PrintVisitor printVisitor;
-    //     cout << endl;
-    //     cout << "IMPRIMIR:" << endl;
-    //     printVisitor.imprimir(program);
-    //     cout  << endl;
-    //     delete program;
-    // } catch (const exception& e) {
-    //     cout << "Error durante la ejecución: " << e.what() << endl;
-    //     return 1;
-    // }
+    cout << endl;
+    cout << "Iniciando parsing:" << endl;
+    Parser parser(&scanner);
+    try {
+        Program* program = parser.parseProgram();
+        cout << "Parsing exitoso" << endl << endl;
+        cout << "Iniciando Visitor:" << endl;
+        PrintVisitor printVisitor;
+        cout << endl;
+        cout << "IMPRIMIR:" << endl;
+        printVisitor.imprimir(program);
+        cout  << endl;
+        delete program;
+    } catch (const exception& e) {
+        cout << "Error durante la ejecución: " << e.what() << endl;
+        return 1;
+    }
 
     return 0;
 }
