@@ -28,6 +28,17 @@ int IdentifierExp::accept(Visitor *visitor)
     return visitor->visit(this);
 }
 
+int FCallExp::accept(Visitor *visitor)
+{
+    return visitor->visit(this);
+}
+
+int FCallStatement::accept(Visitor *visitor)
+{
+    visitor->visit(this);
+    return 0;
+}
+
 int AssignStatement::accept(Visitor *visitor)
 {
     visitor->visit(this);
@@ -108,6 +119,18 @@ int PrintVisitor::visit(IdentifierExp *exp)
 {
     cout << exp->name;
     return 0;
+}
+
+void PrintVisitor::visit(FCallStatement *stm)
+{
+    cout << stm->fname << "(";
+    for (auto i : stm->args)
+    {
+        i->accept(this);
+        if (i != stm->args.back())
+            cout << ", ";
+    }
+    cout << ");";
 }
 
 void PrintVisitor::visit(AssignStatement *stm)

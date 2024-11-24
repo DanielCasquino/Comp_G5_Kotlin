@@ -9,7 +9,7 @@ using namespace std;
 
 void Parser::throw_invalidParse(Token::Type expected, Token::Type found, string message = "")
 {
-    cout << "Parser error: expected type (" << Token::typeToString(expected) << "), found (" << Token::typeToString(found) << ") at " << scanner->printPosition() << endl;
+    cout << "Parser error: expected type (" << Token::typeToString(expected) << "), found (" << Token::typeToString(found) << ')' << endl;
     if (message != "")
         cout << message << endl;
     exit(2);
@@ -43,7 +43,8 @@ bool Parser::advance()
     current = scanner->nextToken();
     previous = temp;
     if (check(Token::ERROR))
-        scanner->throw_unrecognizedCharacter();
+        cout << "Error en scanner - carácter inválido: " << current->getText() << endl;
+    // scanner->throw_unrecognizedCharacter();
     return true;
 }
 
@@ -57,7 +58,8 @@ Parser::Parser(Scanner *sc) : scanner(sc)
     previous = nullptr;
     current = scanner->nextToken();
     if (current->getType() == Token::ERROR)
-        scanner->throw_unrecognizedCharacter();
+        cout << "Error en scanner - carácter inválido: " << current->getText() << endl;
+    // scanner->throw_unrecognizedCharacter();
 }
 
 Exp *Parser::parseCExp()
@@ -182,6 +184,28 @@ Stm *Parser::parseAssignStatement()
     return new AssignStatement(id, e);
 }
 
+Stm *Parser::parseFCallStatement()
+{
+    string id = previous->getText();
+    if (!match(Token::LEFT_PARENTHESIS))
+        throw_invalidParse(Token::LEFT_PARENTHESIS, current->getType(), "ParseFCallStatement: Expected '(' after function name.");
+
+    if (match(Token::RIGHT_PARENTHESIS))
+        return new FCallStatement(id, list<Exp *>());
+
+    list<Exp *> args;
+
+    args.push_back(parseCExp());
+
+    while (match(Token::COMMA))
+        args.push_back(parseCExp());
+
+    if (!match(Token::RIGHT_PARENTHESIS))
+        throw_invalidParse(Token::RIGHT_PARENTHESIS, current->getType(), "ParseFCallStatement: Expected ')' after arguments.");
+
+    return new FCallStatement(id, args);
+}
+
 Stm *Parser::parsePrintStatement()
 {
     if (!match(Token::LEFT_PARENTHESIS))
@@ -253,22 +277,12 @@ Stm *Parser::parseForStatement()
     if (!match(Token::RIGHT_BRACKET))
         throw_invalidParse(Token::RIGHT_BRACKET, current->getType(), "ParseForStatement: Expected '}' after body.");
 
-    return new ForStatement(start, end, step, isUpTo, body);
+    return new ForStatement(start, end, step, isUpTo, temporalVariableId, body);
 }
 
 Stm *Parser::parseReturnStatement()
 {
-    if (!match(Token::LEFT_PARENTHESIS))
-        throw_invalidParse(Token::LEFT_PARENTHESIS, current->getType(), "ParseReturnStatement: Expected '(' after 'return'.");
-
-    if (match(Token::RIGHT_PARENTHESIS)) // No stuff inside return
-        return new ReturnStatement(nullptr);
-
     Exp *e = parseCExp();
-
-    if (!match(Token::RIGHT_PARENTHESIS))
-        throw_invalidParse(Token::RIGHT_PARENTHESIS, current->getType(), "ParseReturnStatement: Expected ')' after expression inside return.");
-
     return new ReturnStatement(e);
 }
 
@@ -276,25 +290,26 @@ Stm *Parser::parseStatement()
 {
     Stm *s = nullptr;
 
-    if (current == nullptr)
+    if (current == NULL)
         throw_invalidParse(Token::ID, Token::END, "ParseStatement: Expected a Statement, found nothing.");
 
     if (match(Token::ID))
-        s = parseAssignStatement();
-
+    {
+        if (check(Token::LEFT_PARENTHESIS))
+            s = parseFCallStatement();
+        else if (check(Token::ASSIGN))
+            s = parseAssignStatement();
+    }
     else if (match(Token::PRINTLN))
         s = parsePrintStatement();
-
     else if (match(Token::IF))
         s = parseIfStatement();
-
     else if (match(Token::FOR))
         s = parseForStatement();
-
     else if (match(Token::RETURN))
         s = parseReturnStatement();
     else
-        throw_invalidParse(Token::ID, current->getType(), "ParseStatement: Expected a Statement.");
+        throw_invalidParse(Token::ID, current->getType(), "ParseStatement: Expected a Statement, found no valid statement start.");
 
     return s;
 }
@@ -304,8 +319,15 @@ StatementList *Parser::parseStatementList()
 {
     StatementList *sl = new StatementList();
     sl->add(parseStatement());
-    while (match(Token::SEMICOLON))
+    while (match(Token::SEMICOLON) or match(Token::LINE_BREAK))
+    {
+        // Si encuentra un RIGHT_BRACKETS break y el salto de linea muere
+        if (check(Token::RIGHT_BRACKET))
+        {
+            break;
+        }
         sl->add(parseStatement());
+    }
     return sl;
 }
 
@@ -323,12 +345,15 @@ std::pair<string, string> Parser::parseParamDec()
     if (!match(Token::ID))
         throw_invalidParse(Token::ID, current->getType(), "ParamDec: Expected type after '('.");
 
-    type = previous->getText();
+    id = previous->getText();
+
+    if (!match(Token::COLON))
+        throw_invalidParse(Token::COLON, current->getType(), "ParamDec: Expected ':' after var name.");
 
     if (!match(Token::ID))
-        throw_invalidParse(Token::ID, current->getType(), "ParamDec: Expected id after type.");
+        throw_invalidParse(Token::ID, current->getType(), "ParamDec: Expected type after ':'.");
 
-    id = previous->getText();
+    type = previous->getText();
 
     return make_pair(type, id);
 }
@@ -373,12 +398,12 @@ FunDec *Parser::parseFunDec()
     if (!match(Token::RIGHT_PARENTHESIS)) // Parse right parenthesis
         throw_invalidParse(Token::RIGHT_PARENTHESIS, current->getType(), "FunDec: Expected ')' after parameters.");
 
-    if (!match(Token::COLON)) // Parse colon
-        throw_invalidParse(Token::COLON, current->getType(), "FunDec: Expected ':' after parameters and before return type.");
+    // if (!match(Token::COLON)) // Parse colon
+    //     throw_invalidParse(Token::COLON, current->getType(), "FunDec: Expected ':' after parameters and before return type.");
 
-    if (!match(Token::ID)) // Parse type
-        throw_invalidParse(Token::ID, current->getType(), "FunDec: Expected function return type after FUN.");
-    string type = previous->getText(); // Save function type
+    // if (!match(Token::ID)) // Parse type
+    //     throw_invalidParse(Token::ID, current->getType(), "FunDec: Expected function return type after FUN.");
+    // string type = previous->getText(); // Save function type
 
     if (!match(Token::LEFT_BRACKET)) // Parse start of function
         throw_invalidParse(Token::LEFT_BRACKET, current->getType(), "FunDec: Expected '{' at the start.");
@@ -387,7 +412,7 @@ FunDec *Parser::parseFunDec()
 
     if (!match(Token::RIGHT_BRACKET)) // Parse end of function
         throw_invalidParse(Token::RIGHT_BRACKET, current->getType(), "FunDec: Expected '}' at the end.");
-
+    string type = "void";
     return new FunDec(type, id, pdl, body);
 }
 
@@ -412,31 +437,55 @@ FunDecList *Parser::parseFunDecList()
 // Basically doesn't do type inference
 VarDec *Parser::parseVarDec()
 {
-    if (!match(Token::VAR)) // Var keyword
-        return nullptr;     // No VAR parsed, so there's no VarDec
+    VarDec *vd = nullptr;
+    if (match(Token::VAR) || match(Token::VAL))
+    {
+        string val_var = previous->getText();
 
-    if (!match(Token::ID)) // Variable type
-        throw_invalidParse(Token::ID, current->getType(), "VarDec: Expected variable type after VAR.");
+        // Ids
+        list<string> ids;
+        if (!match(Token::ID))
+        {
+            cout << "Error: se esperaba un identificador después de 'var'." << endl;
+            exit(1);
+        }
+        ids.push_back(previous->getText());
+        while (match(Token::COMMA))
+        {
+            if (!match(Token::ID))
+            {
+                cout << "Error: se esperaba un identificador después de ','." << endl;
+                exit(1);
+            }
+            ids.push_back(previous->getText());
+        } // ids es de tamaño 1 skjdks
+        if (!match(Token::COLON))
+        {
+            cout << "Error: se esperaba un ':'" << endl;
+            exit(1);
+        }
+        if (!match(Token::ID))
+        {
+            cout << "Error: se esperaba un identificador después de 'var' o 'val'." << endl;
+            exit(1);
+        }
+        string type = previous->getText(); // Type es id
 
-    string name = previous->getText(); // Save variable name
-
-    if (!match(Token::COLON)) // Colon after variable name
-        throw_invalidParse(Token::COLON, current->getType(), "VarDec: Expected colon after variable name.");
-
-    if (!match(Token::ID)) // Variable type
-        throw_invalidParse(Token::ID, current->getType(), "VarDec: Expected variable type after colon.");
-
-    string type = previous->getText(); // Save variable type
-    list<string> variables;
-    variables.push_back(name);
-    return new VarDec(type, variables);
+        if (!match(Token::SEMICOLON) and !match(Token::LINE_BREAK))
+        {
+            cout << "Error: se esperaba un ';' un salto de linea al final de la declaración." << endl;
+            exit(1);
+        }
+        vd = new VarDec(type, ids, val_var);
+    }
+    return vd;
 }
 
 VarDecList *Parser::parseVarDecList()
 {
     VarDecList *vdl = new VarDecList();
     VarDec *first = parseVarDec();
-    while (first) // If we got a VarDec
+    while (first != nullptr) // If we got a VarDec
     {
         vdl->add(first);       // Add it to the list
         first = parseVarDec(); // Try to parse another VarDec

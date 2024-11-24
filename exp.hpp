@@ -79,14 +79,11 @@ class FCallExp : public Exp
 public:
     string id;
     list<Exp *> arglist;
-    FCallExp() {}
-    FCallExp(string id) : id(id) {}
-    FCallExp(string id, list<Exp *> arglist) : id(id), arglist(arglist) {}
-    ~FCallExp() {}
-    int accept(Visitor *visitor)
-    {
-        return visitor->visit(this);
-    }
+    FCallExp();
+    FCallExp(string id);
+    FCallExp(string id, list<Exp *> arglist);
+    ~FCallExp();
+    int accept(Visitor *visitor);
 };
 
 class Stm
@@ -94,6 +91,18 @@ class Stm
 public:
     virtual int accept(Visitor *visitor) = 0;
     virtual ~Stm() = 0;
+};
+
+class FCallStatement : public Stm
+{
+public:
+    std::string fname;
+    list<Exp *> args;
+    FCallStatement(std::string fname, list<Exp *> args);
+    // void accept(ImpValueVisitor* v);
+    // // void accept(TypeVisitor* v);
+    int accept(Visitor *visitor);
+    ~FCallStatement();
 };
 
 class AssignStatement : public Stm
@@ -143,7 +152,8 @@ public:
     Exp *step;
     bool isUpTo;
     Body *b;
-    ForStatement(Exp *start, Exp *end, Exp *step, bool isUpto, Body *b);
+    string temporalVariable;
+    ForStatement(Exp *start, Exp *end, Exp *step, bool isUpto, string temporalVariable, Body *b);
     int accept(Visitor *visitor);
     ~ForStatement();
 };
@@ -153,7 +163,8 @@ class VarDec
 public:
     string type;
     list<string> vars;
-    VarDec(string type, list<string> vars);
+    string val_var;
+    VarDec(string type, list<string> vars, string val_var);
     int accept(Visitor *visitor);
     ~VarDec();
 };

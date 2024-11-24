@@ -20,6 +20,26 @@ IFExp::~IFExp()
 NumberExp::~NumberExp() {}
 BoolExp::~BoolExp() {}
 IdentifierExp::~IdentifierExp() {}
+FCallExp::FCallExp() {}
+FCallExp::FCallExp(string id) : id(id) {}
+FCallExp::FCallExp(string id, list<Exp *> arglist) : id(id), arglist(arglist) {}
+FCallExp::~FCallExp()
+{
+    while (!arglist.empty())
+    {
+        delete arglist.front();
+        arglist.pop_front();
+    }
+}
+FCallStatement::FCallStatement(string fname, list<Exp *> args) : fname(fname), args(args) {}
+FCallStatement::~FCallStatement()
+{
+    while (!args.empty())
+    {
+        delete args.front();
+        args.pop_front();
+    }
+}
 AssignStatement::AssignStatement(string id, Exp *e) : id(id), rhs(e) {}
 AssignStatement::~AssignStatement()
 {
@@ -44,7 +64,7 @@ WhileStatement::~WhileStatement()
     delete condition;
     delete b;
 }
-ForStatement::ForStatement(Exp *s, Exp *e, Exp *st, bool isUp, Body *b) : start(s), end(e), step(st), isUpTo(isUp), b(b) {}
+ForStatement::ForStatement(Exp *s, Exp *e, Exp *st, bool isUp, string temp, Body *b) : start(s), end(e), step(st), isUpTo(isUp), temporalVariable(temp), b(b) {}
 ForStatement::~ForStatement()
 {
     delete start;
@@ -53,7 +73,7 @@ ForStatement::~ForStatement()
     delete b;
 }
 
-VarDec::VarDec(string type, list<string> vars) : type(type), vars(vars) {}
+VarDec::VarDec(string type, list<string> vars, string v_v) : type(type), vars(vars), val_var(v_v) {}
 VarDec::~VarDec() {}
 
 VarDecList::VarDecList() : vardecs() {}

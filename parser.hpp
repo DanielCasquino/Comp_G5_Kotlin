@@ -25,6 +25,7 @@ private:
     Stm *parseIfStatement();
     Stm *parsePrintStatement();
     Stm *parseAssignStatement();
+    Stm *parseFCallStatement();
 
     // Body dependencies
     Stm *parseStatement();
