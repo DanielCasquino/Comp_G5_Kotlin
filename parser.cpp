@@ -360,11 +360,6 @@ FunDec *Parser::parseFunDec()
     if (!match(Token::FUN)) // If no FUN, no FunDec
         return nullptr;
 
-    if (!match(Token::ID)) // Parse type
-        throw_invalidParse(Token::ID, current->getType(), "FunDec: Expected function return type after FUN.");
-
-    string type = previous->getText(); // Save function type
-
     if (!match(Token::ID)) // Parse id
         throw_invalidParse(Token::ID, current->getType(), "FunDec: Expected function name after type.");
 
@@ -378,10 +373,20 @@ FunDec *Parser::parseFunDec()
     if (!match(Token::RIGHT_PARENTHESIS)) // Parse right parenthesis
         throw_invalidParse(Token::RIGHT_PARENTHESIS, current->getType(), "FunDec: Expected ')' after parameters.");
 
+    if (!match(Token::COLON)) // Parse colon
+        throw_invalidParse(Token::COLON, current->getType(), "FunDec: Expected ':' after parameters and before return type.");
+
+    if (!match(Token::ID)) // Parse type
+        throw_invalidParse(Token::ID, current->getType(), "FunDec: Expected function return type after FUN.");
+    string type = previous->getText(); // Save function type
+
+    if (!match(Token::LEFT_BRACKET)) // Parse start of function
+        throw_invalidParse(Token::LEFT_BRACKET, current->getType(), "FunDec: Expected '{' at the start.");
+
     Body *body = parseBody();
 
-    if (!match(Token::ENDFUN)) // Parse endfun
-        throw_invalidParse(Token::ENDFUN, current->getType(), "FunDec: Expected 'ENDFUN' at the end.");
+    if (!match(Token::RIGHT_BRACKET)) // Parse end of function
+        throw_invalidParse(Token::RIGHT_BRACKET, current->getType(), "FunDec: Expected '}' at the end.");
 
     return new FunDec(type, id, pdl, body);
 }
