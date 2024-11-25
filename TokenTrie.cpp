@@ -1,4 +1,4 @@
-#include "tokentrie.hpp"
+#include "TokenTrie.hpp"
 
 TokenTrie::Node::Node() {}
 

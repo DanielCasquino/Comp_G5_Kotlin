@@ -1,165 +1,181 @@
 #include <iostream>
-#include "exp.hpp"
-#include "visitor.hpp"
+#include "exp.h"
+#include "visitor.h"
 #include <unordered_map>
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////////
-int BinaryExp::accept(Visitor *visitor)
-{
+int BinaryExp::accept(Visitor* visitor) {
     return visitor->visit(this);
 }
-int IFExp::accept(Visitor *visitor)
-{
+int IFExp::accept(Visitor* visitor) {
     return visitor->visit(this);
 }
-int NumberExp::accept(Visitor *visitor)
-{
+int NumberExp::accept(Visitor* visitor) {
     return visitor->visit(this);
 }
 
-int BoolExp::accept(Visitor *visitor)
-{
+int BoolExp::accept(Visitor* visitor) {
     return visitor->visit(this);
 }
 
-int IdentifierExp::accept(Visitor *visitor)
-{
+int IdentifierExp::accept(Visitor* visitor) {
     return visitor->visit(this);
 }
 
-int AssignStatement::accept(Visitor *visitor)
-{
+int AssignStatement::accept(Visitor* visitor) {
     visitor->visit(this);
     return 0;
 }
 
-int PrintStatement::accept(Visitor *visitor)
-{
+int FCallStatement::accept(Visitor* visitor) {
     visitor->visit(this);
     return 0;
 }
 
-int IfStatement::accept(Visitor *visitor)
-{
+int PrintStatement::accept(Visitor* visitor) {
     visitor->visit(this);
     return 0;
 }
 
-int WhileStatement::accept(Visitor *visitor)
-{
-    visitor->visit(this);
-    return 0;
-}
-int ForStatement::accept(Visitor *visitor)
-{
+int IfStatement::accept(Visitor* visitor) {
     visitor->visit(this);
     return 0;
 }
 
-int VarDec::accept(Visitor *visitor)
-{
+int WhileStatement::accept(Visitor* visitor) {
     visitor->visit(this);
     return 0;
 }
 
-int VarDecList::accept(Visitor *visitor)
-{
+// int DoWhileStatement::accept(Visitor* visitor) {
+//     visitor->visit(this);
+//     return 0;
+// }
+
+int ForStatement::accept(Visitor* visitor) {
     visitor->visit(this);
     return 0;
 }
-int StatementList::accept(Visitor *visitor)
-{
+
+int VarDec::accept(Visitor* visitor) {
     visitor->visit(this);
     return 0;
 }
-int Body::accept(Visitor *visitor)
-{
+
+int VarDecList::accept(Visitor* visitor) {
     visitor->visit(this);
     return 0;
+}
+int StatementList::accept(Visitor* visitor) {
+    visitor->visit(this);
+    return 0;
+}
+int Body::accept(Visitor* visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int Program::accept(Visitor* visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+
+int FunDec::accept(Visitor* visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int FunDecList::accept(Visitor* visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int ReturnStatement::accept(Visitor* visitor) {
+    visitor->visit(this);
+    return 0;
+}
+
+int FCallExp::accept(Visitor* visitor) {
+    return visitor->visit(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-int PrintVisitor::visit(BinaryExp *exp)
-{
+int PrintVisitor::visit(BinaryExp* exp) {
     exp->left->accept(this);
     cout << ' ' << Exp::binopToChar(exp->op) << ' ';
     exp->right->accept(this);
     return 0;
 }
 
-int PrintVisitor::visit(NumberExp *exp)
-{
+int PrintVisitor::visit(NumberExp* exp) {
     cout << exp->value;
     return 0;
 }
 
-int PrintVisitor::visit(BoolExp *exp)
-{
-    if (exp->value)
-        cout << "true";
-    else
-        cout << "false";
+int PrintVisitor::visit(BoolExp* exp) {
+    if(exp->value) cout << "true";
+    else cout << "false";
     return 0;
 }
 
-int PrintVisitor::visit(IdentifierExp *exp)
-{
+int PrintVisitor::visit(IdentifierExp* exp) {
     cout << exp->name;
     return 0;
 }
 
-void PrintVisitor::visit(AssignStatement *stm)
-{
+void PrintVisitor::visit(AssignStatement* stm) {
     cout << stm->id << " = ";
     stm->rhs->accept(this);
     cout << ";";
 }
 
-void PrintVisitor::visit(PrintStatement *stm)
-{
-    cout << "print(";
+void PrintVisitor::visit(PrintStatement* stm) {
+    cout << "println(";
     stm->e->accept(this);
     cout << ");";
 }
 
-void PrintVisitor::visit(IfStatement *stm)
-{
-    cout << "if ";
+void PrintVisitor::visit(IfStatement* stm) {
+    cout << "if (";
     stm->condition->accept(this);
-    cout << " then" << endl;
+    cout << ") {" << endl;
     stm->then->accept(this);
-    if (stm->els)
-    {
+    if(stm->els){
         printIndent();
-        cout << "else" << endl;
+        cout << "else {" << endl;
         stm->els->accept(this);
+        printIndent();
+        cout << "}" << endl;
+
     }
-    printIndent();
-    cout << "endif";
+
 }
 
-void PrintVisitor::imprimir(Program *program)
-{
-    program->var_dec_lists->accept(this);
-    program->fun_dec_lists->accept(this);
+void PrintVisitor::imprimir(Program* program){
+    program->accept(this);
 }
 
-int PrintVisitor::visit(IFExp *pepito)
-{
-    cout << "ifexp(";
+void PrintVisitor::visit(Program* program){
+    program->vardecs->accept(this);
+    program->fundecs->accept(this);
+};
+
+
+int PrintVisitor::visit(IFExp* pepito) {
+    cout<< "ifexp(";
     pepito->cond->accept(this);
-    cout << ",";
+    cout<< ",";
     pepito->left->accept(this);
-    cout << ",";
+    cout<< ",";
     pepito->right->accept(this);
-    cout << ")";
+    cout << ")" ;
     return 0;
 }
 
-void PrintVisitor::visit(WhileStatement *stm)
-{
+void PrintVisitor::visit(WhileStatement* stm){
     cout << "while ";
     stm->condition->accept(this);
     cout << " do" << endl;
@@ -168,129 +184,131 @@ void PrintVisitor::visit(WhileStatement *stm)
     cout << "endwhile";
 }
 
-void PrintVisitor::visit(ForStatement *stm)
-{
-    cout << "for ";
+// void PrintVisitor::visit(DoWhileStatement* stm){
+//     cout << " do" << endl;
+//     stm->b->accept(this);
+//     printIndent();
+//     cout << "while ";
+//     stm->condition->accept(this);
+//     cout << "endwhile";
+// }
+
+void PrintVisitor::visit(ForStatement* stm){
+    cout << "for ("<<stm->temporalVariable<<" in ";
     stm->start->accept(this);
-    cout << " to ";
+    cout << "..";
     stm->end->accept(this);
-    cout << " step ";
-    stm->step->accept(this);
-    cout << " do" << endl;
+    // cout << " step ";
+    // stm->step->accept(this);
+    cout << ") {" << endl;
     stm->b->accept(this);
-    cout << "endfor";
+    printIndent();
+    cout << "}";
 }
 
-void PrintVisitor::visit(VarDec *stm)
-{
-    cout << "var ";
-    cout << stm->type;
-    cout << " ";
-    for (auto i : stm->vars)
-    {
+void PrintVisitor::visit(VarDec* stm){
+    cout << stm->val_var<<" ";
+
+    for(auto i: stm->vars){
         cout << i;
-        if (i != stm->vars.back())
-            cout << ", ";
+        cout<<": ";
+        if(i != stm->vars.back()) cout << ", ";
     }
+    cout << stm->type;
+
     cout << ";";
 }
 
-void PrintVisitor::visit(VarDecList *stm)
-{
-    for (auto i : stm->vardecs)
-    {
+void PrintVisitor::visit(VarDecList* stm){
+    for(auto i: stm->vardecs){
         printIndent();
         i->accept(this);
         cout << endl;
     }
 }
 
-void PrintVisitor::visit(StatementList *stm)
-{
-    for (auto i : stm->stms)
-    {
+void PrintVisitor::visit(StatementList* stm){
+    for(auto i: stm->stms){
         printIndent();
         i->accept(this);
         cout << endl;
     }
 }
 
-void PrintVisitor::visit(Body *stm)
-{
+void PrintVisitor::visit(Body* stm){
     increaseIndent();
     stm->vardecs->accept(this);
     stm->slist->accept(this);
-
     decreaseIndent();
 }
 
-void PrintVisitor::printIndent()
-{
-    for (int i = 0; i < indentLevel * 2; i++)
-    {
-        cout << ' ';
+void PrintVisitor::visit(FunDec* stm){
+    string type_fun =stm->rtype ;
+    if (type_fun == "void") { //Es decir tipo por defect
+        type_fun = "";//No mostrar algo jiji
     }
-}
-
-///////////////////////////////////////////////////////////////////////////////////
-
-int PrintVisitor::visit(FCallExp *exp)
-{
-    cout << exp->id << "";
-    cout << "(";
-    for (auto i : exp->arglist)
-    {
-        i->accept(this);
+    cout << "fun" <<" " << stm->fname << "(";
+    bool first = true;
+    list<string>::iterator type, name;
+    for (type = stm->types.begin(), name = stm->vars.begin(); type != stm->types.end(); type++, name++) {
+        if (!first) cout << ", ";
+        cout << *name << ": " << *type;
+        first = false;
     }
     cout << ")";
-    return 0;
-}
-
-void PrintVisitor::visit(Program *p)
-{
-    visit(p);
-    // p->var_dec_lists->accept(this);
-    // p->fun_dec_lists->accept(this);
-}
-
-void PrintVisitor::visit(ParamDecList *p)
-{
-    // cout<<"es---"<<p->types.size()<<endl;
-    for (int i = 0; i < p->types.size(); i++)
-    {
-        cout << p->types[i] << " ";
-        cout << p->ids[i];
+    if (!type_fun.empty()) {
+        cout << ": " << type_fun;
     }
+    cout << "{" << endl;
+    stm->body->accept(this);
+    cout << "}";
 }
 
-void PrintVisitor::visit(FunDec *p)
-{
-    cout << "fun ";
-    cout << p->type << " ";
-    cout << p->id;
-    cout << "(";
-    p->param_dec_list->accept(this);
-    cout << ")" << endl;
-    p->body->accept(this);
-    cout << "endfun" << endl;
-}
-
-void PrintVisitor::visit(FunDecList *p)
-{
-    for (auto item : p->fun_decs)
-    {
-        printIndent();
-        item->accept(this);
+void PrintVisitor::visit(FunDecList* stm){
+    for(auto i: stm->flist){
+        i->accept(this);
         cout << endl;
     }
 }
 
-void PrintVisitor::visit(ReturnStatement *p)
-{
-    cout << "return (";
-    if (p->exp != nullptr)
-    {
-        p->exp->accept(this);
-    }
-    cout << ")";
+void PrintVisitor::visit(ReturnStatement* s) {
+  cout << "return ";
+  if (s->e != NULL) s->e->accept(this);
+  cout << "";
+  return;
 }
+
+int PrintVisitor::visit(FCallExp* e) {
+  cout << e->fname << "(";
+  list<Exp*>::iterator it;
+  bool first = true;
+  for (it = e->args.begin(); it != e->args.end(); ++it) {
+    if (!first) cout << ",";
+    first = false;
+    (*it)->accept(this);
+  }
+  cout << ')';
+  return 0;
+}
+
+void PrintVisitor::visit(FCallStatement* e) {
+  cout << e->fname << "(";
+  list<Exp*>::iterator it;
+  bool first = true;
+  for (it = e->args.begin(); it != e->args.end(); ++it) {
+    if (!first) cout << ",";
+    first = false;
+    (*it)->accept(this);
+  }
+  cout << ')';
+
+}
+
+void PrintVisitor::printIndent() {
+    for (int i = 0; i < indentLevel*2; i++) {
+    cout << ' ';
+    }
+
+}
+
+///////////////////////////////////////////////////////////////////////////////////

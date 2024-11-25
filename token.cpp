@@ -1,74 +1,68 @@
-#include "token.hpp"
 #include <iostream>
+#include "token.h"
 
-Token::Token(Type type) : _type(type), _text("") {}
+using namespace std;
 
-Token::Token(Type type, char c) : _type(type), _text(1, c) {}
+Token::Token(Type type):type(type) { text = ""; }
 
-Token::Token(Type type, std::string s) : _type(type), _text(std::move(s)) {}
+Token::Token(Type type, char c):type(type) { text = string(1, c); }
 
-Token::Token(Type type, const std::string &source, int first, int last)
-    : _type(type), _text(source.substr(first, last - first + 1)) {}
-
-auto Token::getType() const -> Type
-{
-    return _type;
+Token::Token(Type type, const string& source, int first, int last):type(type) {
+    text = source.substr(first, last);
 }
 
-auto Token::getText() const -> std::string
-{
-    return _text;
+Token::Token(Type type, std::string c): type(type) {
+    text = c;
 }
 
-std::string Token::typeToString(Type type)
+std::ostream& operator << ( std::ostream& outs, const Token & tok )
 {
-    return typeToStringMap.at(type);
-}
-
-std::ostream &operator<<(std::ostream &outs, const Token &tok)
-{
-    outs << "Token(" << Token::typeToString(tok._type) << ')';
+    switch (tok.type) {
+        case Token::PLUS: outs << "TOKEN(PLUS)"; break;
+        case Token::MINUS: outs << "TOKEN(MINUS)"; break;
+        case Token::MUL: outs << "TOKEN(MUL)"; break;
+        case Token::DIV: outs << "TOKEN(DIV)"; break;
+        case Token::NUM: outs << "TOKEN(NUM)"; break;
+        case Token::ERR: outs << "TOKEN(ERR)"; break;
+        case Token::PD: outs << "TOKEN(PD)"; break;
+        case Token::PI: outs << "TOKEN(PI)"; break;
+        case Token::END: outs << "TOKEN(END)"; break;
+        case Token::ID: outs << "TOKEN(ID)"; break;
+        case Token::ASSIGN: outs << "TOKEN(ASSIGN)"; break;
+        case Token::PC: outs << "TOKEN(PC)"; break;
+        case Token::IF: outs << "TOKEN(IF)"; break;
+        case Token::ELSE: outs << "TOKEN(ELSE)"; break;
+        case Token::COMA: outs << "TOKEN(COMA)"; break;
+        case Token::VAR: outs << "TOKEN(VAR)"; break;
+        case Token::FOR : outs << "TOKEN(FOR)"; break;
+        case Token::RETURN : outs << "TOKEN(RETURN)"; break;
+        case Token::FUN : outs << "TOKEN(FUN)"; break;
+        case Token::ENDFUN : outs << "TOKEN(ENDFUN)"; break;
+        case Token::GREATER_THAN : outs << "TOKEN(GREATER_THAN)"; break;
+        case Token::EQUAL : outs << "TOKEN(EQUAL)"; break;
+        case Token::VAL : outs << "TOKEN(VAL)"; break;
+        case Token::COLON : outs << "TOKEN(COLON)"; break;
+        case Token::PRINTLN : outs << "TOKEN(PRINTLN)"; break;
+        case Token::LEFT_BRACKETS : outs << "TOKEN(LEFT_BRACKETS)"; break;
+        case Token::RIGHT_BRACKETS : outs << "TOKEN(RIGHT_BRACKETS)"; break;
+        case Token::LINE_BREAK : outs << "TOKEN(LINE_BREAK)"; break;
+        case Token::DDOT : outs << "TOKEN(DDOT)"; break;
+        case Token::IN : outs << "TOKEN(IN)"; break;
+        default: outs << "TOKEN(UNKNOWN)"; break;
+    }
     return outs;
 }
 
-std::ostream &operator<<(std::ostream &outs, const Token *tok)
-{
-    outs << "Token(" << Token::typeToString(tok->_type) << ')';
-    return outs;
+std::ostream& operator << ( std::ostream& outs, const Token* tok ) {
+    return outs << *tok;
 }
 
-const std::unordered_map<Token::Type, std::string> Token::typeToStringMap = {
-    {ERROR, "ERROR"},
-    {ADD, "ADD"},
-    {SUB, "SUB"},
-    {MUL, "MUL"},
-    {DIV, "DIV"},
-    {NUM, "NUM"},
-    {END, "END"},
-    {ASSIGN, "ASSIGN"},
-    {IF, "IF"},
-    {ELSE, "ELSE"},
-    {COMMA, "COMMA"},
-    {FOR, "FOR"},
-    {RETURN, "RETURN"},
-    {GREATER_THAN, "GREATER_THAN"},
-    {GREATER_EQUAL, "GREATER_EQUAL"},
-    {EQUAL, "EQUAL"},
-    {FUN, "FUN"},
-    {ENDFUN, "ENDFUN"},
-    {LEFT_PARENTHESIS, "LEFT_PARENTHESIS"},
-    {RIGHT_PARENTHESIS, "RIGHT_PARENTHESIS"},
-    {VAL, "VAL"},
-    {VAR, "VAR"},
-    {ID, "ID"},
-    {COLON, "COLON"},
-    {PRINTLN, "PRINTLN"},
-    {LEFT_BRACKET, "LEFT_BRACKET"},
-    {RIGHT_BRACKET, "RIGHT_BRACKET"},
-    {LINE_BREAK, "LINE_BREAK"},
-    {SEMICOLON, "SEMICOLON"},
-    {DOUBLE_DOT, "DOUBLE_DOT"},
-    {IN, "IN"},
-    {DOWNTO, "DOWNTO"},
-    {UPTO, "UPTO"},
-    {STEP, "STEP"}};
+Token::Token(const Token& other) : type(other.type), text(other.text) {}
+
+Token& Token::operator=(const Token& other) {
+    if (this != &other) { // Evitar autoasignación
+        type = other.type;
+        text = other.text;
+    }
+    return *this;
+}

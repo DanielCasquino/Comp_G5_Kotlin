@@ -1,0 +1,4 @@
+C:/Code/UTEC/Compiladores/ProyectoFinal_Marce/Scanner/cmake-build-debug/CMakeFiles/Scanner.dir
+C:/Code/UTEC/Compiladores/ProyectoFinal_Marce/Scanner/cmake-build-debug/CMakeFiles/pila.dir
+C:/Code/UTEC/Compiladores/ProyectoFinal_Marce/Scanner/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Code/UTEC/Compiladores/ProyectoFinal_Marce/Scanner/cmake-build-debug/CMakeFiles/rebuild_cache.dir

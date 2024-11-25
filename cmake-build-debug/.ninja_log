@@ -1,0 +1,22 @@
+# ninja log v6
+16	302	7541939496983903	CMakeFiles/Scanner.dir/token.cpp.obj	ad3282101e4e3727
+20	481	7542084246777075	CMakeFiles/Scanner.dir/visitor.cpp.obj	6b8dfcfd3b80da8f
+13	338	7541939496953635	CMakeFiles/Scanner.dir/scanner.cpp.obj	4b7c21f1df33f1d5
+702	1161	7542092951606552	Scanner.exe	f37b04e0850c8c4d
+4	585	7542092944629712	CMakeFiles/Scanner.dir/main.cpp.obj	ebd95b5baa056759
+9	546	7542084246675812	CMakeFiles/Scanner.dir/parser.cpp.obj	a2d8c65889360abf
+7	552	7542084246655424	CMakeFiles/Scanner.dir/exp.cpp.obj	b476a0ce71158934
+11	869	7542084246705817	CMakeFiles/Scanner.dir/imp_type_checker.cpp.obj	c30fedf68b58e683
+10	335	7542033157324135	CMakeFiles/Scanner.dir/imp_type.cpp.obj	dad53ce47e330cc2
+4	254	7542086871736656	CMakeFiles/Scanner.dir/imp_value.cpp.obj	6eb5438872ea43e8
+3	698	7542089680289001	CMakeFiles/Scanner.dir/imp_interpreter.cpp.obj	b12dc620248503b1
+5	435	7541963650743999	CMakeFiles/Scanner.dir/TokenTrie.cpp.obj	c4f8810fcbe5e9a8
+8	702	7542092944671359	CMakeFiles/Scanner.dir/imp_codegen.cpp.obj	31ab67a7af55ad2b
+11	416	7542096854015261	CMakeFiles/pila.dir/svm_run.cpp.obj	9a2b655fa7591809
+1	490	7542096853914738	CMakeFiles/pila.dir/svm.cpp.obj	1f9cf33aaae0d87d
+8	514	7542096853984742	CMakeFiles/pila.dir/svm_parser.cpp.obj	8e23357d7389fcd3
+514	654	7542096859043829	pila.exe	562356cec6443eb1
+5	744	7542117381696285	CMakeFiles/Scanner.dir/imp_codegen.cpp.obj	31ab67a7af55ad2b
+744	1217	7542117389085869	Scanner.exe	f37b04e0850c8c4d
+4	804	7542122096085518	CMakeFiles/Scanner.dir/imp_codegen.cpp.obj	31ab67a7af55ad2b
+805	1260	7542122104091759	Scanner.exe	f37b04e0850c8c4d

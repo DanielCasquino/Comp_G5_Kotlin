@@ -1,6 +1,3 @@
-#ifndef TOKEN_HPP
-#define TOKEN_HPP
-
 #include <unordered_map>
 #include <string>
 #include <iostream>
@@ -10,46 +7,35 @@ class Token
 public:
     enum Type
     {
-        ERROR,
-        ADD,
-        SUB,
-        MUL,
-        DIV,
-        NUM,
-        END,
-        ASSIGN,
-        IF,
-        ELSE,
-        COMMA,
-        FOR,
-        RETURN,
-
-        GREATER_THAN,  // >
-        GREATER_EQUAL, // >=
-        EQUAL,         // ==
-
-        FUN,    // fun
-        ENDFUN, // endfun
-
+        ERROR,             //
+        ADD,               // +
+        SUB,               // -
+        MUL,               // *
+        DIV,               // /
         LEFT_PARENTHESIS,  // (
         RIGHT_PARENTHESIS, // )
-
-        VAL, // val
-        VAR, // var
-        ID,  // id
-
-        COLON,         //:
-        PRINTLN,       // println
-        LEFT_BRACKET,  // {
-        RIGHT_BRACKET, // }
-
-        LINE_BREAK, // \n
-        SEMICOLON,  // ;
-        DOUBLE_DOT, // ..
-        IN,         // in
-        DOWNTO,
-        UPTO,
-        STEP
+        FUN,               // fun
+        LEFT_BRACKETS,     // {
+        RIGHT_BRACKETS,    // }
+        ASSIGN,            // =
+        COLON,             // :
+        INT,               // Int
+        VAR,               // var
+        COMMENT,           // //
+        COMMENT_START,     // /*
+        COMMENT_END,       // */
+        PRINTLN,           // println
+        COMMA,             // ,
+        RETURN,            // return
+        VAL,               // val
+        POINT,             // .
+        IF,                // if
+        ELSE,              // else
+        GREATER_THAN,      // >
+        LESS_THAN,         // <
+        GREATER_EQUAL,     // >=
+        LESS_EQUAL,        // <=
+        EQUAL,             // ==
     };
 
 private:
@@ -68,5 +54,3 @@ public:
     friend std::ostream &operator<<(std::ostream &outs, const Token &tok);
     friend std::ostream &operator<<(std::ostream &outs, const Token *tok);
 };
-
-#endif // TOKEN_HPP
