@@ -2,10 +2,10 @@ fun main() {
     var x: Int
 
     x = 1
-
-    for (i in 0..4) { //tambien declara i como variable local
+    
+    for (i in 0..9) { //tambien declara i como variable local
         x = x + i
     }
-
+    
     println(x)
 }

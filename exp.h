@@ -166,13 +166,17 @@ public:
     Exp* step;
     Body* b;
     string temporalVariable;
+    Stm* assig;
     ForStatement(Exp* start, Exp* end, Exp* step, Body* b, string temporalVariable);
+    ForStatement(Exp* start, Exp* end, Exp* step, Body* b, string temporalVariable,Stm* assig)
+        :start(start), end(end), step(step), b(b), temporalVariable(temporalVariable) , assig(assig){
+    }
+
     int accept(Visitor* visitor);
     void accept(ImpValueVisitor* v);
     void accept(TypeVisitor* v);
     ~ForStatement();
 };
-
 class VarDec {
 public:
     string type;

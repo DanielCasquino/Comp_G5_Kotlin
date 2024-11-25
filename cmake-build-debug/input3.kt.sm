@@ -15,15 +15,15 @@ push  0
 storer 2
 L0: skip
 loadr 2
-push  4
-sub
+push  9
+le
 jmpz L1
 loadr 1
-load -452986624
+loadr 2
 add
 storer 1
 loadr 2
-push  1
+push 1
 add
 storer 2
 goto L0

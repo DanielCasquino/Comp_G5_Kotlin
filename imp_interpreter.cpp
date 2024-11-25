@@ -318,23 +318,25 @@ void ImpInterpreter::visit(ReturnStatement* s) {
 
 void ImpInterpreter::visit(ForStatement* s) {
     env.add_level();
-
     ImpValue start = s->start->accept(this);
     ImpValue end = s->end->accept(this);
     ImpValue paso = s->step->accept(this);
-    cout << "add var" << endl;
     env.add_var(s->temporalVariable, start);
     if (start.type != TINT || end.type != TINT || paso.type != TINT) {
         cout << "Error de tipos:  tienen que ser enteros" << endl;
         exit(0);
     }
-    int a = start.int_value;
-    while(a<end.int_value){
-        env.update(s->temporalVariable, ImpValue(a, TINT));
-        s->b ->accept(this);
-        a += paso.int_value;
+
+    s->assig->accept(this); // Ya tenemos la variable lista para usarla
+    ImpValue currentValue = env.lookup(s->temporalVariable);
+    while (currentValue.int_value <= end.int_value) {
+        s->b->accept(this);
+        int nuevoValor = currentValue.int_value + paso.int_value;
+        env.update(s->temporalVariable, ImpValue(nuevoValor, TINT));
+        currentValue = env.lookup(s->temporalVariable);
     }
-    // IMPORTANT: REMOVE_LEVEL MISSING???
+    // IMPORTANT: REMOVE_LEVEL MISSING??? // No xdxdxd o si ns ya es nochecita pipi
+    env.remove_level();// Si si habia sido tenemos q liminar al i xdxd
     return;
 }
 

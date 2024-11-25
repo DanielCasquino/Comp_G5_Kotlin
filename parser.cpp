@@ -348,6 +348,8 @@ Stm* Parser::parseStatement() {
             cout << "Error: se esperaba '{' al final de la declaración." << endl;
             exit(1);
         }
+        //Al terner la variable temporal la guardamos con id i = 1, es un assing
+        Exp* temporal = new IdentifierExp(temporal_variable);
         //VarDec* temporal_variable_ = new VarDec("Int", {temporal_variable}, "var");
         tb = parseBody();
         // save the iterator in the body
@@ -358,7 +360,8 @@ Stm* Parser::parseStatement() {
             exit(1);
         }
         Exp *step = new NumberExp(1);
-        s = new ForStatement(start, end, step, tb, temporal_variable);
+        Stm* asign = new AssignStatement(temporal_variable,start);
+        s = new ForStatement(start, end, step, tb, temporal_variable,asign);
     }
     else if(match(Token::RETURN)){
         e = parseCExp();

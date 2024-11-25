@@ -156,6 +156,7 @@ void ImpCodeGen::visit(StatementList* s) {
 }
 
 void ImpCodeGen::visit(AssignStatement* s) {
+  // cout<<"Entrando al ssigment"<<endl;
   s->rhs->accept(this);
   VarEntry ventry = direcciones.lookup(s->id);
   if (ventry.is_global)
@@ -228,43 +229,44 @@ void ImpCodeGen::visit(ReturnStatement* s) {
 }
 
 void ImpCodeGen::visit(ForStatement* s) {
-
     string l1 = next_label();
     string l2 = next_label();
-    string l3 = next_label();
 
-    //alloc 1
+    direcciones.add_level();
+    VarEntry ventry;
+    ventry.is_global = false;
+    ventry.dir = ++current_dir;
+    direcciones.add_var(s->temporalVariable, ventry);
     codegen(nolabel, "alloc", 1);
-    current_dir++;
 
-    int it_val = current_dir;
-
-    // Inicializar el contador
+    //Variable temporal con valor
     s->start->accept(this);
-    codegen(nolabel, "storer", it_val);
+    codegen(nolabel, "storer", ventry.dir);
 
     codegen(l1, "skip");
 
-    // Evaluar la condición
-    codegen(nolabel, "loadr", it_val);
+    codegen(nolabel, "loadr", ventry.dir);
     s->end->accept(this);
-    codegen(nolabel, "sub");
+    codegen(nolabel, "le");
     codegen(nolabel, "jmpz", l2);
 
-    // Ejecutar el cuerpo del bucle
+    // direcciones.add_level();
     s->b->accept(this);
+    // direcciones.remove_level();
 
-    // Incrementar el contador
-    codegen(nolabel, "loadr", it_val);
-    s->step->accept(this);
+    codegen(nolabel, "loadr", ventry.dir);
+    codegen(nolabel, "push", 1);
     codegen(nolabel, "add");
-    codegen(nolabel, "storer", it_val);
+    codegen(nolabel, "storer", ventry.dir);
 
     codegen(nolabel, "goto", l1);
+
     codegen(l2, "skip");
 
-  return ;
+    direcciones.remove_level();
+    return;
 }
+
 
 int ImpCodeGen::visit(BinaryExp* e) {
   e->left->accept(this);
