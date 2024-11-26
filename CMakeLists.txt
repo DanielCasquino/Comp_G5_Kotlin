@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 project(Scanner)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 
 add_executable(Scanner main.cpp exp.cpp exp.h
       parser.cpp parser.h environment.hh imp_type_checker.cpp imp_type_checker.hh

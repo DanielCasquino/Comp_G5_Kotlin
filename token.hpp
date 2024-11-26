@@ -36,6 +36,7 @@ public:
         GREATER_EQUAL,     // >=
         LESS_EQUAL,        // <=
         EQUAL,             // ==
+        WHILE,
     };
 
 private:
