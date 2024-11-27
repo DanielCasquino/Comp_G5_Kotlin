@@ -74,5 +74,5 @@ const std::unordered_map<Token::Type, std::string> Token::typeToStringMap = {
     {DOUBLE_DOT, "DOUBLE_DOT"},
     {IN, "IN"},
     {DOWNTO, "DOWNTO"},
-    {UPTO, "UPTO"},
+    {DO, "DO"},
     {STEP, "STEP"}};

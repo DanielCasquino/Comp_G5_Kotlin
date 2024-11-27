@@ -37,9 +37,9 @@ Scanner::Scanner(const char *s) : input(s), first(0), current(0), prevtext("")
                           {"..", Token::DOUBLE_DOT},
                           {"in", Token::IN},
                           {"step", Token::STEP},
-                          {"upto", Token::UPTO},
                           {"downto", Token::DOWNTO},
-                          {"while", Token::WHILE}});
+                          {"while", Token::WHILE},
+                          {"do", Token::DO}});
 }
 
 bool isWhiteSpace(char c)
@@ -114,7 +114,16 @@ Token *Scanner::nextToken()
         return token;
     }
 
-    if (isdigit(c))
+    if (c == '-' || c == '+' && current + 1 < input.length() && isdigit(input[current + 1]))
+    {
+        ++current;
+        current++;
+        while (current < input.length() && isdigit(input[current]))
+            current++;
+        string number = input.substr(first, current - first);
+        token = new Token(Token::NUM, number);
+    }
+    else if (isdigit(c))
     {
         current++;
         while (current < input.length() && isdigit(input[current]))

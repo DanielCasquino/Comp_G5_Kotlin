@@ -18,7 +18,7 @@ public:
   virtual void visit(PrintStatement *e) = 0;
   virtual void visit(IfStatement *e) = 0;
   virtual void visit(WhileStatement *e) = 0;
-  // virtual void visit(DoWhileStatement* e) =  0;
+  virtual void visit(DoWhileStatement *e) = 0;
   virtual void visit(ReturnStatement *e) = 0;
   virtual void visit(ForStatement *e) = 0;
   virtual void visit(FCallStatement *e) = 0;

@@ -58,10 +58,11 @@ int WhileStatement::accept(Visitor *visitor)
     return 0;
 }
 
-// int DoWhileStatement::accept(Visitor* visitor) {
-//     visitor->visit(this);
-//     return 0;
-// }
+int DoWhileStatement::accept(Visitor *visitor)
+{
+    visitor->visit(this);
+    return 0;
+}
 
 int ForStatement::accept(Visitor *visitor)
 {
@@ -208,29 +209,35 @@ void PrintVisitor::visit(WhileStatement *stm)
 {
     cout << "while ";
     stm->condition->accept(this);
-    cout << " do" << endl;
+    cout << " {" << endl;
     stm->b->accept(this);
     printIndent();
-    cout << "endwhile";
+    cout << "}";
 }
 
-// void PrintVisitor::visit(DoWhileStatement* stm){
-//     cout << " do" << endl;
-//     stm->b->accept(this);
-//     printIndent();
-//     cout << "while ";
-//     stm->condition->accept(this);
-//     cout << "endwhile";
-// }
+void PrintVisitor::visit(DoWhileStatement *stm)
+{
+    cout << "do {" << endl;
+    stm->body->accept(this);
+    printIndent();
+    cout << "} while ";
+    stm->condition->accept(this);
+}
 
 void PrintVisitor::visit(ForStatement *stm)
 {
     cout << "for (" << stm->temporalVariable << " in ";
     stm->start->accept(this);
-    cout << "..";
+    if (stm->isUpto)
+        cout << "..";
+    else
+        cout << " downto ";
     stm->end->accept(this);
-    // cout << " step ";
-    // stm->step->accept(this);
+    if (stm->explicitStep)
+    {
+        cout << " step ";
+        stm->step->accept(this);
+    }
     cout << ") {" << endl;
     stm->b->accept(this);
     printIndent();

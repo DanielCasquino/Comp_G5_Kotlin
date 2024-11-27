@@ -228,19 +228,18 @@ void ImpCodeGen::visit(WhileStatement *s)
   return;
 }
 
-// void ImpCodeGen::visit(DoWhileStatement* s) {
-//   string l1 = next_label();
-//   string l2 = next_label();
-//
-//   codegen(l1,"skip");
-//   s->body->accept(this);
-//   codegen(l2,"skip");
-//   s->condition->accept(this);
-//   codegen(nolabel,"jmpz",l2);
-//   codegen(nolabel,"goto",l1);
-//   codegen(l2,"skip");
-//
-// }
+void ImpCodeGen::visit(DoWhileStatement *s)
+{
+  string l1 = next_label();
+  string l2 = next_label();
+
+  codegen(l1, "skip");
+  s->body->accept(this);
+  s->condition->accept(this);
+  codegen(nolabel, "jmpz", l2);
+  codegen(nolabel, "goto", l1);
+  codegen(l2, "skip");
+}
 
 void ImpCodeGen::visit(ReturnStatement *s)
 {
@@ -283,8 +282,9 @@ void ImpCodeGen::visit(ForStatement *s)
   // direcciones.remove_level();
 
   codegen(nolabel, "loadr", ventry.dir);
-  codegen(nolabel, "push", 1);
-  codegen(nolabel, "add");
+  // codegen(nolabel, "push", 1);
+  s->step->accept(this); // push the step
+  codegen(nolabel, s->isUpto ? "add" : "sub");
   codegen(nolabel, "storer", ventry.dir);
 
   codegen(nolabel, "goto", l1);
@@ -338,7 +338,7 @@ int ImpCodeGen::visit(BinaryExp *e)
 
 int ImpCodeGen::visit(NumberExp *e)
 {
-  codegen(nolabel, "push ", e->value);
+  codegen(nolabel, "push", e->value);
   return 0;
 }
 

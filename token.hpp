@@ -29,6 +29,7 @@ public:
         IF,
         ELSE,
         FOR,
+        DO,
         WHILE,
         RETURN,
         PRINTLN,
@@ -55,7 +56,6 @@ public:
         DOUBLE_DOT, // ..
         IN,         // in
 
-        UPTO,
         DOWNTO,
         STEP
     };

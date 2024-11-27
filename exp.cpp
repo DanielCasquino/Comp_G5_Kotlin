@@ -63,7 +63,19 @@ WhileStatement::~WhileStatement()
     delete condition;
     delete b;
 }
-ForStatement::ForStatement(Exp *s, Exp *e, Exp *st, Body *b, string temporalVariable) : start(s), end(e), step(st), b(b), temporalVariable(temporalVariable) {}
+
+DoWhileStatement::DoWhileStatement(Exp *c, Body *t) : condition(c), body(t) {}
+DoWhileStatement::~DoWhileStatement()
+{
+    delete condition;
+    delete body;
+}
+ForStatement::ForStatement(Exp *s, Exp *e, Exp *st, Body *b, string temporalVariable, bool iuto, bool exStep) : start(s), end(e), step(st), b(b), temporalVariable(temporalVariable), isUpto(iuto), explicitStep(exStep) {}
+
+ForStatement::ForStatement(Exp *s, Exp *e, Exp *st, Body *b, string temporalVariable, Stm *assig, bool iuto, bool exStep)
+    : start(s), end(e), step(st), b(b), temporalVariable(temporalVariable), assig(assig), isUpto(iuto), explicitStep(exStep)
+{
+}
 
 ForStatement::~ForStatement()
 {

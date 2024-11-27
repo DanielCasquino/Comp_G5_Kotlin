@@ -231,7 +231,17 @@ void ImpTypeChecker::visit(WhileStatement *s)
   return;
 }
 
-// IMPORTANT: DoWhile deleted
+void ImpTypeChecker::visit(DoWhileStatement *s)
+{
+  if (!s->condition->accept(this).match(booltype))
+  {
+    cout << "Expresion conditional en IF debe de ser bool" << endl;
+    exit(0);
+  }
+  sp_decr(1);
+  s->body->accept(this);
+  return;
+}
 
 void ImpTypeChecker::visit(ReturnStatement *s)
 {

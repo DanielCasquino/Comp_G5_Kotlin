@@ -172,14 +172,12 @@ class DoWhileStatement : public Stm
 {
 public:
     Exp *condition;
-    Body *b;
-    DoWhileStatement(Exp *condition, Body *b) : condition(condition), b(b) {}
+    Body *body;
+    DoWhileStatement(Exp *condition, Body *b);
     int accept(Visitor *visitor);
     void accept(ImpValueVisitor *v);
     void accept(TypeVisitor *v);
-    ~DoWhileStatement()
-    {
-    }
+    ~DoWhileStatement();
 };
 
 class ForStatement : public Stm
@@ -190,12 +188,11 @@ public:
     Exp *step;
     Body *b;
     string temporalVariable;
+    bool isUpto;
+    bool explicitStep;
     Stm *assig;
-    ForStatement(Exp *start, Exp *end, Exp *step, Body *b, string temporalVariable);
-    ForStatement(Exp *start, Exp *end, Exp *step, Body *b, string temporalVariable, Stm *assig)
-        : start(start), end(end), step(step), b(b), temporalVariable(temporalVariable), assig(assig)
-    {
-    }
+    ForStatement(Exp *start, Exp *end, Exp *step, Body *b, string temporalVariable, bool isUpto, bool explicitStep);
+    ForStatement(Exp *start, Exp *end, Exp *step, Body *b, string temporalVariable, Stm *assig, bool isUpto, bool explicitStep);
 
     int accept(Visitor *visitor);
     void accept(ImpValueVisitor *v);

@@ -105,10 +105,11 @@ void WhileStatement::accept(TypeVisitor *v)
     return v->visit(this);
 }
 
-// void DoWhileStatement::accept(TypeVisitor* v) {
-//     return v->visit(this);
-// }
-//
+void DoWhileStatement::accept(TypeVisitor *v)
+{
+    return v->visit(this);
+}
+
 void ReturnStatement::accept(TypeVisitor *v)
 {
     return v->visit(this);
@@ -154,9 +155,10 @@ void WhileStatement::accept(ImpValueVisitor *v)
     return v->visit(this);
 }
 
-// void DoWhileStatement::accept(ImpValueVisitor *visitor) {
-//     return visitor->visit(this);
-// }
+void DoWhileStatement::accept(ImpValueVisitor *visitor)
+{
+    return visitor->visit(this);
+}
 
 void ReturnStatement::accept(ImpValueVisitor *v)
 {
@@ -339,7 +341,7 @@ void ImpInterpreter::visit(IfStatement *s)
     {
         s->then->accept(this);
     }
-    else
+    else if (s->els)
     {
         s->els->accept(this);
     }
@@ -359,18 +361,22 @@ void ImpInterpreter::visit(WhileStatement *s)
         s->b->accept(this);
     }
 }
-// void ImpInterpreter::visit(DoWhileStatement* s) {
-//     s->body->accept(this);
-//     ImpValue v = s->condition->accept(this);
-//     if (v.type != TBOOL) {
-//         cout << "Type error en doWHILE: esperaba bool en condicional" << endl;
-//         exit(0);
-//     }
-//     while(s->condition->accept(this).bool_value) {
-//         s->body->accept(this);
-//     }
-// }
-//
+
+void ImpInterpreter::visit(DoWhileStatement *s)
+{
+    s->body->accept(this);
+    ImpValue v = s->condition->accept(this);
+    if (v.type != TBOOL)
+    {
+        cout << "Type error en doWHILE: esperaba bool en condicional" << endl;
+        exit(0);
+    }
+    while (s->condition->accept(this).bool_value)
+    {
+        s->body->accept(this);
+    }
+}
+
 void ImpInterpreter::visit(ReturnStatement *s)
 {
     if (s->e != NULL)
@@ -394,10 +400,10 @@ void ImpInterpreter::visit(ForStatement *s)
 
     s->assig->accept(this); // Ya tenemos la variable lista para usarla
     ImpValue currentValue = env.lookup(s->temporalVariable);
-    while (currentValue.int_value <= end.int_value)
+    while (s->isUpto ? currentValue.int_value <= end.int_value : currentValue.int_value >= end.int_value)
     {
         s->b->accept(this);
-        int nuevoValor = currentValue.int_value + paso.int_value;
+        int nuevoValor = s->isUpto ? currentValue.int_value + paso.int_value : currentValue.int_value - paso.int_value;
         env.update(s->temporalVariable, ImpValue(nuevoValor, TINT));
         currentValue = env.lookup(s->temporalVariable);
     }

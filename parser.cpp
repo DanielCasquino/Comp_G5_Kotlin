@@ -284,23 +284,36 @@ Stm *Parser::parseIfStatement()
 
 Stm *Parser::parseForStatement()
 {
+    Exp *step = new NumberExp(1); // Default step is 1
+    bool isUpto = true;           // by default, ++i
+    bool exStep = false;          // by default, not step keyword needed
+
     if (!match(Token::LEFT_PARENTHESIS))
         throwUnrecognizedTokenError("ParseForStatement: Expected LEFT_PARENTHESIS after for");
 
     if (!match(Token::ID))
         throwUnrecognizedTokenError("ParseForStatement: Expected variable ID after LEFT_PARENTHESIS");
 
-    string temporal_variable = previous->getText();
+    string tempVarId = previous->getText();
 
     if (!match(Token::IN))
         throwUnrecognizedTokenError("ParseForStatement: Expected IN after variable ID");
 
     Exp *start = parseCExp();
-
     if (!match(Token::DOUBLE_DOT))
-        throwUnrecognizedTokenError("ParseForStatement: Expected DOUBLE_DOT after start expression");
+    {
+        if (!match(Token::DOWNTO))
+            throwUnrecognizedTokenError("ParseForStatement: Expected DOUBLE_DOT or DOWNTO after start expression");
+        isUpto = false;
+    }
 
     Exp *end = parseCExp();
+
+    if (match(Token::STEP))
+    {
+        exStep = true;
+        step = parseCExp();
+    }
 
     if (!match(Token::RIGHT_PARENTHESIS))
         throwUnrecognizedTokenError("ParseForStatement: Expected RIGHT_PARENTHESIS after end expression");
@@ -309,7 +322,7 @@ Stm *Parser::parseForStatement()
         throwUnrecognizedTokenError("ParseForStatement: Expected LEFT_BRACKET before for body");
 
     // Al terner la variable temporal la guardamos con id i = 1, es un assing
-    Exp *temporal = new IdentifierExp(temporal_variable);
+    Exp *temporal = new IdentifierExp(tempVarId);
     // VarDec* temporal_variable_ = new VarDec("Int", {temporal_variable}, "var");
     Body *body = parseBody();
     // save the iterator in the body
@@ -318,11 +331,9 @@ Stm *Parser::parseForStatement()
     if (!match(Token::RIGHT_BRACKET))
         throwUnrecognizedTokenError("ParseForStatement: Expected RIGHT_BRACKET after for body");
 
-    Exp *step = new NumberExp(1);
-    // TODO: implement other type of for
-    Stm *asign = new AssignStatement(temporal_variable, start);
+    Stm *temporalVarAssign = new AssignStatement(tempVarId, start);
 
-    return new ForStatement(start, end, step, body, temporal_variable, asign);
+    return new ForStatement(start, end, step, body, tempVarId, temporalVarAssign, isUpto, exStep);
 }
 
 Stm *Parser::parseWhileStatement()
@@ -334,6 +345,23 @@ Stm *Parser::parseWhileStatement()
     if (!match(Token::RIGHT_BRACKET))
         throwUnrecognizedTokenError("ParseWhileStatement: Expected RIGHT_BRACKET after while body");
     return new WhileStatement(e, body);
+}
+
+Stm *Parser::parseDoWhileStatement()
+{
+    if (!match(Token::LEFT_BRACKET))
+        throwUnrecognizedTokenError("ParseDoWhileStatement: Expected LEFT_BRACKET after doWhile expression");
+    Body *body = parseBody();
+    if (!match(Token::RIGHT_BRACKET))
+        throwUnrecognizedTokenError("ParseDoWhileStatement: Expected RIGHT_BRACKET after doWhile body");
+    if (!match(Token::WHILE))
+        throwUnrecognizedTokenError("ParseDoWhileStatement: Expected WHILE after doWhile body");
+    if (!match(Token::LEFT_PARENTHESIS))
+        throwUnrecognizedTokenError("ParseDoWhileStatement: Expected LEFT_PARENTHESIS after WHILE");
+    Exp *e = parseCExp();
+    if (!match(Token::RIGHT_PARENTHESIS))
+        throwUnrecognizedTokenError("ParseDoWhileStatement: Expected RIGHT_PARENTHESIS after WHILE expression");
+    return new DoWhileStatement(e, body);
 }
 
 Stm *Parser::parseReturnStatement()
@@ -394,6 +422,8 @@ Stm *Parser::parseStatement()
         s = parseForStatement();
     else if (match(Token::WHILE))
         s = parseWhileStatement();
+    else if (match(Token::DO))
+        s = parseDoWhileStatement();
     else if (match(Token::RETURN))
         s = parseReturnStatement();
     else

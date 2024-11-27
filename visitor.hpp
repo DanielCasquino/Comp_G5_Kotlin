@@ -24,7 +24,7 @@ class FunDecList;
 class ReturnStatement;
 class FCallExp;
 class FCallStatement;
-// class DoWhileStatement;
+class DoWhileStatement;
 
 class Visitor
 {
@@ -39,7 +39,7 @@ public:
     virtual void visit(PrintStatement *stm) = 0;
     virtual void visit(IfStatement *stm) = 0;
     virtual void visit(WhileStatement *stm) = 0;
-    // virtual void visit(DoWhileStatement* stm) = 0;
+    virtual void visit(DoWhileStatement *stm) = 0;
     virtual void visit(ForStatement *stm) = 0;
     virtual void visit(VarDec *stm) = 0;
     virtual void visit(VarDecList *stm) = 0;
@@ -66,7 +66,7 @@ public:
     void visit(PrintStatement *stm) override;
     void visit(IfStatement *stm) override;
     void visit(WhileStatement *stm) override;
-    // void visit(DoWhileStatement* stm) override;
+    void visit(DoWhileStatement *stm) override;
     void visit(ForStatement *stm) override;
     void visit(VarDec *stm) override;
     void visit(VarDecList *stm) override;

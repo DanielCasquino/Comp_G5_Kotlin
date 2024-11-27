@@ -29,6 +29,7 @@ public:
     Stm *parseAssignStatement();
     Stm *parseFCallStatement();
     Stm *parseWhileStatement();
+    Stm *parseDoWhileStatement();
 
     Parser(Scanner *scanner);
     Program *parseProgram();
