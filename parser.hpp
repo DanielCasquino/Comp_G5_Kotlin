@@ -21,6 +21,9 @@ private:
 
     void throwUnrecognizedTokenError(string message);
 
+    // Implementacion para retroceder:
+    vector<Token *> history;
+
 public:
     Stm *parseReturnStatement();
     Stm *parseForStatement();

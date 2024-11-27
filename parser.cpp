@@ -89,7 +89,7 @@ VarDec *Parser::parseVarDec()
 
     string type = previous->getText(); // el type es un id
 
-    if (!match(Token::SEMICOLON) and !match(Token::LINE_BREAK))
+    if (!match(Token::SEMICOLON) && !match(Token::LINE_BREAK))
         throwUnrecognizedTokenError("ParseVarDec: Expected LINEBREAK after end of declaration");
 
     return new VarDec(type, ids, valVar);
@@ -126,6 +126,7 @@ Body *Parser::parseBody()
 {
     VarDecList *vdl = parseVarDecList();
     StatementList *sl = parseStatementList();
+    cout << "Correcto: " << previous->getText() << endl;
     return new Body(vdl, sl);
 }
 
@@ -136,6 +137,8 @@ FunDec *Parser::parseFunDec()
     if (!match(Token::FUN))
         return nullptr;
 
+    match(Token::LINE_BREAK);
+
     Body *body = nullptr;
 
     if (!match(Token::ID))
@@ -143,6 +146,8 @@ FunDec *Parser::parseFunDec()
 
     string fname = previous->getText();
     string rtype = "void"; // Tipo void por defecto
+
+    match(Token::LINE_BREAK);
 
     list<string> types;
     list<string> vars;
@@ -188,6 +193,10 @@ FunDec *Parser::parseFunDec()
             rtype = previous->getText(); // Le damos el tipo d ela funcion
         }
     }
+
+    // Verificamos la presencia de saltos de línea:
+    // matcheamos pq puede haber un salto de linea despues de {
+    match(Token::LINE_BREAK);
 
     if (!match(Token::LEFT_BRACKET))
         throwUnrecognizedTokenError("ParseFunDec: Expected LEFT_BRACKET before body");
@@ -235,7 +244,7 @@ list<Stm *> Parser::parseStmList()
 {
     list<Stm *> slist;
     slist.push_back(parseStatement());
-    while (match(Token::SEMICOLON))
+    while (match(Token::SEMICOLON) || match(Token::LINE_BREAK)) // ojito
     {
         slist.push_back(parseStatement());
     }
@@ -254,7 +263,13 @@ Stm *Parser::parsePrintStatement()
 
 Stm *Parser::parseIfStatement()
 {
+    match(Token::LINE_BREAK);
+
     Exp *e = parseCExp();
+
+    // Puede haber un salto de línea
+    match(Token::LINE_BREAK);
+
     if (!match(Token::LEFT_BRACKET))
         throwUnrecognizedTokenError("ParseIfStatement: Expected LEFT_BRACKET after if expression");
 
@@ -262,6 +277,8 @@ Stm *Parser::parseIfStatement()
 
     if (!match(Token::RIGHT_BRACKET))
         throwUnrecognizedTokenError("ParseIfStatement: Expected RIGHT_BRACKET after if body");
+
+    match(Token::LINE_BREAK);
 
     if (!check(Token::ELSE))
         return new IfStatement(e, thenBody, nullptr);
@@ -271,8 +288,12 @@ Stm *Parser::parseIfStatement()
     if (!match(Token::ELSE))
         throwUnrecognizedTokenError("ParseIfStatement: Expected ELSE after if body");
 
+    match(Token::LINE_BREAK);
+
     if (!match(Token::LEFT_BRACKET))
         throwUnrecognizedTokenError("ParseIfStatement: Expected LEFT_BRACKET after else");
+
+    match(Token::LINE_BREAK);
 
     elseBody = parseBody();
 
@@ -318,6 +339,8 @@ Stm *Parser::parseForStatement()
     if (!match(Token::RIGHT_PARENTHESIS))
         throwUnrecognizedTokenError("ParseForStatement: Expected RIGHT_PARENTHESIS after end expression");
 
+    match(Token::LINE_BREAK);
+
     if (!match(Token::LEFT_BRACKET))
         throwUnrecognizedTokenError("ParseForStatement: Expected LEFT_BRACKET before for body");
 
@@ -339,6 +362,8 @@ Stm *Parser::parseForStatement()
 Stm *Parser::parseWhileStatement()
 {
     Exp *e = parseCExp();
+    match(Token::LINE_BREAK);
+
     if (!match(Token::LEFT_BRACKET))
         throwUnrecognizedTokenError("ParseWhileStatement: Expected LEFT_BRACKET after while expression");
     Body *body = parseBody();
@@ -349,6 +374,8 @@ Stm *Parser::parseWhileStatement()
 
 Stm *Parser::parseDoWhileStatement()
 {
+    match(Token::LINE_BREAK);
+
     if (!match(Token::LEFT_BRACKET))
         throwUnrecognizedTokenError("ParseDoWhileStatement: Expected LEFT_BRACKET after doWhile expression");
     Body *body = parseBody();
@@ -454,8 +481,10 @@ Exp *Parser::parseCExp()
         case Token::EQUAL:
             op = EQ_OP;
             break;
+            // TODO: ADD NOT_EQUAL
         }
         Exp *right = parseExpression();
+        match(Token::LINE_BREAK); // ojito1
         left = new BinaryExp(left, right, op);
     }
     return left;

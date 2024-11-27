@@ -16,9 +16,9 @@ return 5
 Lmain: skip
 enter 5
 alloc 2
-push  1
+push 1
 storer 1
-push  20
+push 20
 storer 2
 alloc 1
 loadr 1

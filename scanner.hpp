@@ -1,5 +1,5 @@
-#ifndef SCANNER_H
-#define SCANNER_H
+#ifndef SCANNER_HPP
+#define SCANNER_HPP
 
 #include <string>
 #include "token.hpp"
@@ -20,8 +20,10 @@ public:
     Token *nextToken();
     void reset();
     ~Scanner();
+    // a
+    Token *lookahead(int steps);
 };
 
 void test_scanner(Scanner *scanner);
 
-#endif // SCANNER_H
+#endif // SCANNER_HPP

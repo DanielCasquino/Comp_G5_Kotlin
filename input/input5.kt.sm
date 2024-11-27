@@ -8,17 +8,17 @@ halt
 Lmain: skip
 enter 3
 alloc 1
-push  1
+push 1
 storer 1
 L0: skip
 loadr 1
-push  10
+push 10
 lt
 jmpz L1
 loadr 1
 print
 loadr 1
-push  1
+push 1
 add
 storer 1
 goto L0

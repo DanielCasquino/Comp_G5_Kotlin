@@ -8,14 +8,14 @@ halt
 Lmain: skip
 enter 6
 alloc 1
-push  1
+push 1
 storer 1
 alloc 1
-push  0
+push 0
 storer 2
 L0: skip
 loadr 2
-push  9
+push 9
 le
 jmpz L1
 loadr 1

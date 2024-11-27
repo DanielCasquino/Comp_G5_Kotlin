@@ -47,6 +47,27 @@ bool isWhiteSpace(char c)
     return c == ' ' || c == '\r' || c == '\t';
 }
 
+Token *Scanner::lookahead(int steps)
+{
+    // Guardar el estado actual
+    int savedCurrent = current;
+
+    Token *token = nullptr;
+    for (int i = 0; i < steps; i++)
+    {
+        token = nextToken();
+        if (token->getType() == Token::END)
+        {
+            break;
+        }
+        delete token; // Liberar memoria de tokens intermedios
+    }
+
+    // Restaurar el estado
+    current = savedCurrent;
+    return token;
+}
+
 void Scanner::skipCommentsAndGarbage()
 {
     while (current < input.length())
@@ -108,6 +129,12 @@ Token *Scanner::nextToken()
 
     if (input[current] == '\n')
     {
+        // cout<<"prevtext es: "<<prevtext<<endl;
+        if (input[current + 1] == '>')
+        {
+            // cout<<"Wiii"<<endl;
+        }
+        // Si no, retorna un token LINE_BREAK
         token = new Token(Token::LINE_BREAK, "\n");
         prevtext = "\n";
         current++;
