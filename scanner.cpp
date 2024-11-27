@@ -1,20 +1,54 @@
 #include <iostream>
 #include <cstring>
-#include "token.h"
-#include "scanner.h"
+#include "scanner.hpp"
+#include "TokenTrie.hpp"
 
 using namespace std;
 
-Scanner::Scanner(const char *s) : input(s), first(0), current(0) {}
+Scanner::Scanner(const char *s) : input(s), first(0), current(0), prevtext("")
+{
+    trie = new TokenTrie({{"+", Token::ADD},
+                          {"-", Token::SUB},
+                          {"*", Token::MUL},
+                          {"/", Token::DIV},
+                          {"=", Token::ASSIGN},
+                          {"if", Token::IF},
+                          {"else", Token::ELSE},
+                          {",", Token::COMMA},
+                          {"for", Token::FOR},
+                          {"return", Token::RETURN},
+                          {">", Token::GREATER_THAN},
+                          {">=", Token::GREATER_EQUAL},
+                          {"<", Token::LESS_THAN},
+                          {"<=", Token::LESS_EQUAL},
+                          {"!=", Token::NOT_EQUAL},
+                          {"==", Token::EQUAL},
+                          {"fun", Token::FUN},
+                          {"endfun", Token::ENDFUN},
+                          {"(", Token::LEFT_PARENTHESIS},
+                          {")", Token::RIGHT_PARENTHESIS},
+                          {"val", Token::VAL},
+                          {"var", Token::VAR},
+                          {":", Token::COLON},
+                          {"println", Token::PRINTLN},
+                          {"{", Token::LEFT_BRACKET},
+                          {"}", Token::RIGHT_BRACKET},
+                          {";", Token::SEMICOLON},
+                          {"..", Token::DOUBLE_DOT},
+                          {"in", Token::IN},
+                          {"step", Token::STEP},
+                          {"upto", Token::UPTO},
+                          {"downto", Token::DOWNTO},
+                          {"while", Token::WHILE}});
+}
 
-bool is_white_space(char c)
+bool isWhiteSpace(char c)
 {
     return c == ' ' || c == '\r' || c == '\t';
 }
 
-Token *Scanner::nextToken()
+void Scanner::skipCommentsAndGarbage()
 {
-    Token *token;
     while (current < input.length())
     {
         // Comnetario de linea
@@ -46,11 +80,11 @@ Token *Scanner::nextToken()
             continue;
         }
         // Ignorar salto de linea si ya tiene token subsiguiente o es un antiguo salto de linea
-        if (is_white_space(input[current]) || (( // No es necesario no tener un salto de linea despues de l
-                                                   prevtext == "{" || prevtext == "\n" || prevtext == ";" ||
-                                                   prevtext == "+" || prevtext == "-" || prevtext == "*" || prevtext == "/" ||
-                                                   prevtext == ">" || prevtext == ">=" || prevtext == "==") &&
-                                               input[current] == '\n'))
+        if (isWhiteSpace(input[current]) || (( // No es necesario no tener un salto de linea despues de l
+                                                 prevtext == "{" || prevtext == "\n" || prevtext == ";" ||
+                                                 prevtext == "+" || prevtext == "-" || prevtext == "*" || prevtext == "/" ||
+                                                 prevtext == ">" || prevtext == ">=" || prevtext == "==") &&
+                                             input[current] == '\n'))
         {
             current++;
         }
@@ -59,9 +93,16 @@ Token *Scanner::nextToken()
             break;
         }
     }
+}
+
+Token *Scanner::nextToken()
+{
+    skipCommentsAndGarbage();
+    Token *token;
 
     if (current >= input.length())
         return new Token(Token::END);
+
     char c = input[current];
     first = current;
 
@@ -77,166 +118,41 @@ Token *Scanner::nextToken()
     {
         current++;
         while (current < input.length() && isdigit(input[current]))
-        {
             current++;
-        }
-        token = new Token(Token::NUM, input, first, current - first);
+        string number = input.substr(first, current - first);
+        token = new Token(Token::NUM, number);
     }
-
     else if (isalpha(c))
     {
         current++;
         while (current < input.length() && isalnum(input[current]))
-        {
             current++;
-        }
         string word = input.substr(first, current - first);
-        if (word == "println")
-        {
-            token = new Token(Token::PRINTLN, word, 0, word.length());
-        }
-        else if (word == "if")
-        {
-            token = new Token(Token::IF, word, 0, word.length());
-        }
-        else if (word == "else")
-        {
-            token = new Token(Token::ELSE, word, 0, word.length());
-        }
-        else if (word == "for")
-        {
-            token = new Token(Token::FOR, word, 0, word.length());
-        }
-        else if (word == "while")
-        {
-            token = new Token(Token::WHILE, word, 0, word.length());
-        }
-        else if (word == "var")
-        {
-            token = new Token(Token::VAR, word, 0, word.length());
-        }
-        else if (word == "return")
-        {
-            token = new Token(Token::RETURN, word, 0, word.length());
-        }
-        else if (word == "val")
-        {
-            token = new Token(Token::VAL, word, 0, word.length());
-        }
-        else if (word == "fun")
-        {
-            token = new Token(Token::FUN, word, 0, word.length());
-        }
-        else if (word == "endfun")
-        {
-            token = new Token(Token::ENDFUN, word, 0, word.length());
-        }
-        else if (word == "in")
-        {
-            token = new Token(Token::IN, word, 0, word.length());
-        }
-        else
-        {
-            token = new Token(Token::ID, word, 0, word.length());
-        }
-    }
-
-    else if (strchr("+-*/()=;,><{}:.", c))
-    {
-        switch (c)
-        {
-        case '+':
-            token = new Token(Token::PLUS, c);
-            break;
-        case '-':
-            token = new Token(Token::MINUS, c);
-            break;
-        case '*':
-            token = new Token(Token::MUL, c);
-            break;
-        case '/':
-            token = new Token(Token::DIV, c);
-            break;
-
-        case ',':
-            token = new Token(Token::COMA, c);
-            break;
-        case '(':
-            token = new Token(Token::PI, c);
-            break;
-        case ')':
-            token = new Token(Token::PD, c);
-            break;
-        case '.':
-            if (current + 1 < input.length() && input[current + 1] == '.')
-            {
-                token = new Token(Token::DDOT, "..", 0, 2);
-                current++;
-            }
-            break;
-
-        case '=':
-            if (current + 1 < input.length() && input[current + 1] == '=')
-            {
-                token = new Token(Token::EQUAL, "==", 0, 2);
-                current++;
-            }
-            else
-            {
-                token = new Token(Token::ASSIGN, c);
-            }
-            break;
-        case '>':
-            if (current + 1 < input.length() && input[current + 1] == '=')
-            {
-                token = new Token(Token::GREATER_EQUAL, ">=", 0, 2);
-                current++;
-            }
-            else
-            {
-                token = new Token(Token::GREATER_THAN, c);
-            }
-            break;
-        case '<':
-            if (current + 1 < input.length() && input[current + 1] == '=')
-            {
-                token = new Token(Token::LESS_EQUAL, "<=", 0, 2);
-                current++;
-            }
-            else
-            {
-                token = new Token(Token::LESS_THAN, c);
-            }
-            break;
-        case ';':
-            token = new Token(Token::PC, c);
-            break;
-        case '{':
-            token = new Token(Token::LEFT_BRACKETS, c);
-            break;
-        case '}':
-            token = new Token(Token::RIGHT_BRACKETS, c);
-            break;
-        case ':':
-            token = new Token(Token::COLON, c);
-            break;
-        default:
-            cout << "No debería llegar acá" << endl;
-            token = new Token(Token::ERR, c);
-        }
-        current++;
+        Token::Type type = trie->findToken(word);
+        token = type != Token::ERROR ? new Token(type, word) : new Token(Token::ID, word);
     }
     else
     {
-        token = new Token(Token::ERR, c);
-        current++;
+        int iterator = current;
+        int lastCorrectToken = current;
+        string word = "";
+        Token::Type type = Token::ERROR;
+        while (!isWhiteSpace(input[iterator]) && !isalpha(input[iterator]) && !isdigit(input[iterator]) && iterator < input.length())
+        {
+            word += input[iterator];
+            Token::Type found = trie->findToken(word);
+            if (found != Token::ERROR)
+            {
+                type = found;
+                lastCorrectToken = iterator + 1;
+            }
+            ++iterator;
+        }
+        word = word.substr(0, lastCorrectToken - current);
+        token = new Token(type, word);
+        current = lastCorrectToken;
     }
-
-    // if (prevToken) {
-    //     delete prevToken;
-    // }
-    // prevToken = token;
-    prevtext = token->text;
+    prevtext = token->getText();
     return token;
 }
 
@@ -255,11 +171,11 @@ void test_scanner(Scanner *scanner)
     Token *current;
     cout << "Iniciando Scanner:" << endl
          << endl;
-    while ((current = scanner->nextToken())->type != Token::END)
+    while ((current = scanner->nextToken())->getType() != Token::END)
     {
-        if (current->type == Token::ERR)
+        if (current->getType() == Token::ERROR)
         {
-            cout << "Error en scanner - carácter inválido: " << current->text << endl;
+            cout << "Error en scanner - carácter inválido: " << current->getText() << endl;
             break;
         }
         else

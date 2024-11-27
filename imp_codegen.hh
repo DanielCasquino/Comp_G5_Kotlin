@@ -8,46 +8,48 @@
 #include <string>
 #include <fstream>
 
-#include "exp.h"
-#include "visitor.h"
+#include "exp.hpp"
+#include "visitor.hpp"
 #include "environment.hh"
 #include "imp_type_checker.hh"
 
-class VarEntry {
+class VarEntry
+{
 public:
   int dir;
   bool is_global;
 };
 
-class ImpCodeGen : public Visitor {
+class ImpCodeGen : public Visitor
+{
 public:
-  ImpCodeGen(ImpTypeChecker*);
-  void codegen(Program*, string outfname);
-  void visit(Program*);
-  void visit(Body*);
-  void visit(VarDecList*);
-  void visit(VarDec*);
-  void visit(FunDecList*);
-  void visit(FunDec*);
-  void visit(StatementList*);
-  void visit(AssignStatement*);
-  void visit(PrintStatement*);
-  void visit(IfStatement*);
-  void visit(WhileStatement*);
+  ImpCodeGen(ImpTypeChecker *);
+  void codegen(Program *, string outfname);
+  void visit(Program *);
+  void visit(Body *);
+  void visit(VarDecList *);
+  void visit(VarDec *);
+  void visit(FunDecList *);
+  void visit(FunDec *);
+  void visit(StatementList *);
+  void visit(AssignStatement *);
+  void visit(PrintStatement *);
+  void visit(IfStatement *);
+  void visit(WhileStatement *);
   // void visit(DoWhileStatement*);
-  void visit(ReturnStatement*);
-  void visit(ForStatement*);
-  void visit(FCallStatement*);
+  void visit(ReturnStatement *);
+  void visit(ForStatement *);
+  void visit(FCallStatement *);
 
-  int visit(BinaryExp* e);
-  int visit(NumberExp* e);
-  int visit(BoolExp* e);
-  int visit(IdentifierExp* e);
-  int visit(IFExp* e);
-  int visit(FCallExp* e);
+  int visit(BinaryExp *e);
+  int visit(NumberExp *e);
+  int visit(BoolExp *e);
+  int visit(IdentifierExp *e);
+  int visit(IFExp *e);
+  int visit(FCallExp *e);
 
 private:
-  ImpTypeChecker* analysis;
+  ImpTypeChecker *analysis;
   std::ostringstream code;
   string nolabel;
   int current_label;
@@ -62,6 +64,5 @@ private:
   string next_label();
   string get_flabel(string fname);
 };
-
 
 #endif

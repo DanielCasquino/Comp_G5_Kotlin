@@ -1,12 +1,12 @@
-#ifndef EXP_H
-#define EXP_H
+#ifndef EXP_HPP
+#define EXP_HPP
 #include "imp_value.hh"
 #include "imp_type.hh"
 #include <string>
 #include <unordered_map>
 #include <list>
-#include "visitor.h"
-#include "type_visitor.h"
+#include "visitor.hpp"
+#include "type_visitor.hpp"
 using namespace std;
 enum BinaryOp
 {
@@ -313,4 +313,4 @@ public:
     ~Program();
 };
 
-#endif // EXP_H
+#endif // EXP_HPP
