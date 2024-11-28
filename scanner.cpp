@@ -101,13 +101,32 @@ void Scanner::skipCommentsAndGarbage()
             continue;
         }
         // Ignorar salto de linea si ya tiene token subsiguiente o es un antiguo salto de linea
-        if (isWhiteSpace(input[current]) || (( // No es necesario no tener un salto de linea despues de l
-                                                 prevtext == "{" || prevtext == "\n" || prevtext == ";" ||
-                                                 prevtext == "+" || prevtext == "-" || prevtext == "*" || prevtext == "/" ||
-                                                 prevtext == ">" || prevtext == ">=" || prevtext == "==") &&
-                                             input[current] == '\n'))
+        if (isWhiteSpace(input[current]) || ((
+               prevtext == "{" || prevtext == "\n" || prevtext == ";" || prevtext == ":" || prevtext == "(" ||
+               prevtext == "+" || prevtext == "-" || prevtext == "*" || prevtext == "/" ||
+               prevtext == "<" || prevtext == ">" || prevtext == ">=" || prevtext == "==" || prevtext == "=") &&
+             input[current] == '\n'))
         {
             current++;
+            continue;
+        }
+        else if (input[current] == '\n')
+        {
+            int nexts_ = current + 1;
+            // Avanzar sobre espacios en blanco y saltos de línea
+            while (nexts_ < input.length() && (isWhiteSpace(input[nexts_]) || input[nexts_] == '\n'))
+            {
+                nexts_++;
+            }
+            if (nexts_ < input.length() && (input[nexts_] == '>' || input[nexts_] == '+' || input[nexts_] == '*' || input[nexts_] == '/' || input[nexts_] == '<'|| input[nexts_] == '(') )
+            {
+                current++;
+                continue;
+            }
+            else
+            {
+                break;
+            }
         }
         else
         {
@@ -115,7 +134,6 @@ void Scanner::skipCommentsAndGarbage()
         }
     }
 }
-
 Token *Scanner::nextToken()
 {
     skipCommentsAndGarbage();
@@ -129,11 +147,6 @@ Token *Scanner::nextToken()
 
     if (input[current] == '\n')
     {
-        // cout<<"prevtext es: "<<prevtext<<endl;
-        if (input[current + 1] == '>')
-        {
-            // cout<<"Wiii"<<endl;
-        }
         // Si no, retorna un token LINE_BREAK
         token = new Token(Token::LINE_BREAK, "\n");
         prevtext = "\n";

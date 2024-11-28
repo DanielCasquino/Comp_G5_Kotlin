@@ -1,0 +1,69 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.28"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Scanner",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Scanner::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Scanner-Debug-8a03865177c5d9d285bc.json",
+					"name" : "Scanner",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "pila::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-pila-Debug-6e347cd124e6c727ee42.json",
+					"name" : "pila",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/Ce mar/Documents/UTEC Ciclos/Utec ciclo 5/Compiladores/FinalPresentar/Comp_G5_Kotlin/cmake-build-debug",
+		"source" : "C:/Users/Ce mar/Documents/UTEC Ciclos/Utec ciclo 5/Compiladores/FinalPresentar/Comp_G5_Kotlin"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

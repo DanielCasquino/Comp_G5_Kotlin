@@ -8,6 +8,6 @@ fun main() {
 
     x = 1
     y = 20
-    
+
     println(suma(x, y))
 }

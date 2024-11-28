@@ -2,8 +2,17 @@ fun main() {
     var x: Int
 
     x = 1
-    while (x < 10) {
-        println(x)
+    while (
+    x
+    <
+     10
+     )
+      {
+        println
+        (
+        x
+        )
+
         x = x + 1
     }
 }

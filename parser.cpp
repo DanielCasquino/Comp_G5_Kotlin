@@ -67,12 +67,14 @@ VarDec *Parser::parseVarDec()
         return nullptr;
 
     string valVar = previous->getText();
+    match(Token::LINE_BREAK);
 
     list<string> ids;
 
     if (!match(Token::ID))
         throwUnrecognizedTokenError("ParseVarDec: Expected ID after var/val");
     ids.push_back(previous->getText());
+    match(Token::LINE_BREAK);
 
     while (match(Token::COMMA))
     {
@@ -159,21 +161,25 @@ FunDec *Parser::parseFunDec()
     { // Entro a la lista de argumentos
         if (!match(Token::ID))
             throwUnrecognizedTokenError("ParseFunDec: Expected ID after LEFT_PARENTHESIS");
-
         vars.push_back(previous->getText());
+        match(Token::LINE_BREAK);
 
         if (!match(Token::COLON))
             throwUnrecognizedTokenError("ParseFunDec: Expected COLON after ID");
         if (!match(Token::ID))
             throwUnrecognizedTokenError("ParseFunDec: Expected ID after COLON");
-
         types.push_back(previous->getText());
+        match(Token::LINE_BREAK);
 
         while (match(Token::COMMA))
         {
+            match(Token::LINE_BREAK);
+
             if (!match(Token::ID))
                 throwUnrecognizedTokenError("ParseFunDec: Expected ID after COMMA");
             vars.push_back(previous->getText());
+            match(Token::LINE_BREAK);
+
             if (!match(Token::COLON))
                 throwUnrecognizedTokenError("ParseFunDec: Expected COLON after ID");
 
@@ -182,8 +188,11 @@ FunDec *Parser::parseFunDec()
             types.push_back(previous->getText());
         }
     }
+    match(Token::LINE_BREAK);
     if (!match(Token::RIGHT_PARENTHESIS))
         throwUnrecognizedTokenError("ParseFunDec: Expected RIGHT_PARENTHESIS after arguments");
+    match(Token::LINE_BREAK);
+
     // Cheakeamos si hay o no la declaracion del tipo de la funcion:
     if (check(Token::COLON))
     {
@@ -255,7 +264,9 @@ Stm *Parser::parsePrintStatement()
 {
     if (!match(Token::LEFT_PARENTHESIS))
         throwUnrecognizedTokenError("ParsePrintStatement: Expected LEFT_PARENTHESIS after println");
+    match(Token::LINE_BREAK);
     Exp *e = parseCExp();
+    match(Token::LINE_BREAK);
     if (!match(Token::RIGHT_PARENTHESIS))
         throwUnrecognizedTokenError("ParsePrintStatement: Expected RIGHT_PARENTHESIS after expression");
     return new PrintStatement(e);
@@ -308,25 +319,31 @@ Stm *Parser::parseForStatement()
     Exp *step = new NumberExp(1); // Default step is 1
     bool isUpto = true;           // by default, ++i
     bool exStep = false;          // by default, not step keyword needed
-
+    match(Token::LINE_BREAK);
     if (!match(Token::LEFT_PARENTHESIS))
         throwUnrecognizedTokenError("ParseForStatement: Expected LEFT_PARENTHESIS after for");
+    match(Token::LINE_BREAK);
 
     if (!match(Token::ID))
         throwUnrecognizedTokenError("ParseForStatement: Expected variable ID after LEFT_PARENTHESIS");
 
     string tempVarId = previous->getText();
+    match(Token::LINE_BREAK);
 
     if (!match(Token::IN))
         throwUnrecognizedTokenError("ParseForStatement: Expected IN after variable ID");
+    match(Token::LINE_BREAK);
 
     Exp *start = parseCExp();
+    match(Token::LINE_BREAK);
+
     if (!match(Token::DOUBLE_DOT))
     {
         if (!match(Token::DOWNTO))
             throwUnrecognizedTokenError("ParseForStatement: Expected DOUBLE_DOT or DOWNTO after start expression");
         isUpto = false;
     }
+    match(Token::LINE_BREAK);
 
     Exp *end = parseCExp();
 
@@ -335,6 +352,7 @@ Stm *Parser::parseForStatement()
         exStep = true;
         step = parseCExp();
     }
+    match(Token::LINE_BREAK);
 
     if (!match(Token::RIGHT_PARENTHESIS))
         throwUnrecognizedTokenError("ParseForStatement: Expected RIGHT_PARENTHESIS after end expression");
@@ -412,26 +430,36 @@ Stm *Parser::parseStatement()
 
     if (match(Token::ID))
     {
+        // cout<<"Entrando al assign"<<endl;
         string lex = previous->getText();
-
         if (match(Token::ASSIGN))
         {
             e = parseCExp();
             s = new AssignStatement(lex, e);
         }
-        else
-        {
+
+        else {
+            // cout<<"Entrando en el caso del callstament"<<endl;
+            match(Token::LINE_BREAK);
+
             if (match(Token::LEFT_PARENTHESIS))
             {
+
                 list<Exp *> args;
+
                 if (!check(Token::RIGHT_PARENTHESIS))
                 {
                     args.push_back(parseCExp());
                     while (match(Token::COMMA))
                     {
+                        match(Token::LINE_BREAK);
                         args.push_back(parseCExp());
+                        match(Token::LINE_BREAK);
+
+
                     }
                 }
+
                 if (!match(Token::RIGHT_PARENTHESIS))
                 {
                     cout << "Falta paréntesis derecho" << endl;
@@ -543,17 +571,24 @@ Exp *Parser::parseFactor()
     {
         string texto = previous->getText();
         // Parse FCallExp
+        // match(Token::LINE_BREAK);
+
         if (match(Token::LEFT_PARENTHESIS))
         {
+            match(Token::LINE_BREAK);
             list<Exp *> args;
             if (!check(Token::RIGHT_PARENTHESIS))
             {
                 args.push_back(parseCExp());
+                match(Token::LINE_BREAK);
                 while (match(Token::COMMA))
                 {
+                    match(Token::LINE_BREAK);
                     args.push_back(parseCExp());
+                    match(Token::LINE_BREAK);
                 }
             }
+
             if (!match(Token::RIGHT_PARENTHESIS))
             {
                 cout << "Falta paréntesis derecho" << endl;

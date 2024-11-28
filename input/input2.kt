@@ -4,7 +4,7 @@ fun main() {
 
     x = 5;
     y = 10;
-    
+
     if (x > y) {
         println(x)
     } else {
